@@ -59,6 +59,7 @@ public class UserServiceImpl implements UserService {
         fiatWallet.setBalance(BigDecimal.ZERO);
 
         fiatWalletRepository.save(fiatWallet);
+        userRepository.save(newUser);
 
         return newUser;
     }
