@@ -1,6 +1,10 @@
 server:
   port: 9000
 
+logging:
+  level:
+    org.springframework.security: DEBUG
+
 spring:
   application:
     name: cryptex-simple
@@ -19,13 +23,34 @@ spring:
     init:
       mode: always
 
-  autoconfigure:
-    exclude: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${okta.issuer}
+          audiences: ${okta.audience}
+
+#  security:
+#    oauth2:
+#      client:
+#        registration:
+#          auth0:
+#            client-id: ${okta.client_id}
+#            client-secret: ${okta.client_secret}
+#            scope:
+#              - openid
+#              - profile
+#              - email
+##            authorization-grant-type: authorization_code
+##            redirect-uri: ${okta.redirect_uri}
+##            client-name: Auth0
+#        provider:
+#          auth0:
+#            issuer-uri: ${okta.issuer}
+
+
+#  autoconfigure:
+#    exclude: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
 
   config:
     import: optional:classpath:secret.properties
-
-atonic:
-  cryptex:
-    jwtSecret: ${jwt.jwt_secret}
-    jwtExpirationMs: 86400000

@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 @Builder
 public class UserFIATWalletBalanceResponse {
     @NonNull
-    String userName;
+    String auth0UserId;
     @NonNull
     Long FIATWalletId;
     @NonNull

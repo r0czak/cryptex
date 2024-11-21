@@ -2,11 +2,12 @@ package org.atonic.cryptexsimple.service.impl;
 
 import lombok.AllArgsConstructor;
 import org.atonic.cryptexsimple.model.entity.*;
+import org.atonic.cryptexsimple.model.repository.CryptoWalletRepository;
 import org.atonic.cryptexsimple.model.repository.CryptocurrencyRepository;
 import org.atonic.cryptexsimple.model.repository.FIATWalletRepository;
 import org.atonic.cryptexsimple.model.repository.UserRepository;
-import org.atonic.cryptexsimple.model.repository.CryptoWalletRepository;
 import org.atonic.cryptexsimple.service.UserService;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -22,11 +23,24 @@ public class UserServiceImpl implements UserService {
     private final CryptocurrencyRepository cryptocurrencyRepository;
 
     @Override
-    public User registerUser(User user) {
-        User savedUser = userRepository.save(user);
+    public User getOrRegisterUser(Jwt jwt) {
+        String auth0UserId = jwt.getSubject();
+        String email = jwt.getClaimAsString("email");
+
+        Optional<User> user = userRepository.findByAuth0UserId(auth0UserId);
+
+        return user.orElseGet(() -> registerUser(auth0UserId, email));
+    }
+
+    @Override
+    public User registerUser(String auth0UserId, String email) {
+        User newUser = new User();
+        newUser.setAuth0UserId(auth0UserId);
+        newUser.setEmail(email);
+        newUser.setDeleted(false);
 
         CryptoWallet cryptoWallet = new CryptoWallet();
-        cryptoWallet.setUser(savedUser);
+        cryptoWallet.setUser(newUser);
 
         // Initialize balances for all cryptocurrencies
         List<Cryptocurrency> cryptocurrencies = cryptocurrencyRepository.findAll();
@@ -41,17 +55,17 @@ public class UserServiceImpl implements UserService {
         cryptoWalletRepository.save(cryptoWallet);
 
         FIATWallet fiatWallet = new FIATWallet();
-        fiatWallet.setUser(savedUser);
+        fiatWallet.setUser(newUser);
         fiatWallet.setBalance(BigDecimal.ZERO);
 
         fiatWalletRepository.save(fiatWallet);
 
-        return savedUser;
+        return newUser;
     }
 
     @Override
-    public Optional<User> findByUserName(String username) {
-        return userRepository.findByUsername(username);
+    public Optional<User> findUserByAuth0UserId(String auth0UserId) {
+        return userRepository.findByAuth0UserId(auth0UserId);
     }
 
 }

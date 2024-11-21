@@ -11,7 +11,7 @@ import java.util.List;
 @Builder
 public class UserCryptoWalletBalanceResponse {
     @NonNull
-    String userName;
+    String auth0UserId;
     @NonNull
     Long cryptoWalletId;
     @NonNull
