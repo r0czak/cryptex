@@ -23,23 +23,31 @@ public class UserServiceImpl implements UserService {
     private final CryptocurrencyRepository cryptocurrencyRepository;
 
     @Override
-    public User getOrRegisterUser(Jwt jwt) {
+    public Optional<User> getUser(Jwt jwt) {
+        String auth0UserId = jwt.getSubject();
+
+        return userRepository.findByAuth0UserId(auth0UserId);
+    }
+
+    @Override
+    public User registerUser(Jwt jwt) {
         String auth0UserId = jwt.getSubject();
         String email = jwt.getClaimAsString("email");
 
         Optional<User> user = userRepository.findByAuth0UserId(auth0UserId);
 
-        return user.orElseGet(() -> registerUser(auth0UserId, email));
+        return user.orElseGet(() -> addUser(auth0UserId, email));
     }
 
     @Override
-    public User registerUser(String auth0UserId, String email) {
+    public User addUser(String auth0UserId, String email) {
         User newUser = new User();
         newUser.setAuth0UserId(auth0UserId);
         newUser.setEmail(email);
         newUser.setDeleted(false);
 
         CryptoWallet cryptoWallet = new CryptoWallet();
+        cryptoWallet.setWalletName("Wallet1");
         cryptoWallet.setUser(newUser);
 
         // Initialize balances for all cryptocurrencies
@@ -52,14 +60,14 @@ public class UserServiceImpl implements UserService {
             cryptoWallet.getBalances().add(balance);
         }
 
-        cryptoWalletRepository.save(cryptoWallet);
 
         FIATWallet fiatWallet = new FIATWallet();
         fiatWallet.setUser(newUser);
         fiatWallet.setBalance(BigDecimal.ZERO);
 
-        fiatWalletRepository.save(fiatWallet);
         userRepository.save(newUser);
+        fiatWalletRepository.save(fiatWallet);
+        cryptoWalletRepository.save(cryptoWallet);
 
         return newUser;
     }

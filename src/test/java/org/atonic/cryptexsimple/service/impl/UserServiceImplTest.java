@@ -2,8 +2,8 @@ package org.atonic.cryptexsimple.service.impl;
 
 import org.atonic.cryptexsimple.model.entity.*;
 import org.atonic.cryptexsimple.model.enums.CryptoSymbol;
-import org.atonic.cryptexsimple.model.repository.CryptocurrencyRepository;
 import org.atonic.cryptexsimple.model.repository.CryptoWalletRepository;
+import org.atonic.cryptexsimple.model.repository.CryptocurrencyRepository;
 import org.atonic.cryptexsimple.model.repository.FIATWalletRepository;
 import org.atonic.cryptexsimple.model.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,8 +46,7 @@ class UserServiceImplTest {
 
     @BeforeEach
     public void setUp() {
-        user = new User("testuser", "testuser@example.com", "password");
-        user.setId(1L);
+        user = new User(1L, "testuser", "testuser@example.com", false);
 
         crypto1 = new Cryptocurrency();
         crypto1.setId(1L);
@@ -69,7 +68,7 @@ class UserServiceImplTest {
         when(fiatWalletRepository.save(any(FIATWallet.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // Act
-        User savedUser = userService.registerUser(user);
+        User savedUser = userService.addUser(user.getAuth0UserId(), user.getEmail());
 
         // Assert
         assertNotNull(savedUser);
@@ -98,7 +97,7 @@ class UserServiceImplTest {
         });
 
         // Act
-        User savedUser = userService.registerUser(user);
+        User savedUser = userService.addUser(user.getAuth0UserId(), user.getEmail());
 
         // Assert
         assertNotNull(savedUser);
@@ -128,7 +127,7 @@ class UserServiceImplTest {
         });
 
         // Act
-        User savedUser = userService.registerUser(user);
+        User savedUser = userService.addUser(user.getAuth0UserId(), user.getEmail());
 
         // Assert
         assertNotNull(savedUser);
@@ -143,29 +142,29 @@ class UserServiceImplTest {
     @Test
     void testFindByUserName_UserExists() {
         // Arrange
-        when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(user));
+        when(userRepository.findByAuth0UserId("testuser")).thenReturn(Optional.of(user));
 
         // Act
-        Optional<User> result = userService.findByUserName("testuser");
+        Optional<User> result = userService.findUserByAuth0UserId("testuser");
 
         // Assert
         assertTrue(result.isPresent());
         assertEquals(user, result.get());
 
-        verify(userRepository, times(1)).findByUsername("testuser");
+        verify(userRepository, times(1)).findByAuth0UserId("testuser");
     }
 
     @Test
     void testFindByUserName_UserNotFound() {
         // Arrange
-        when(userRepository.findByUsername("unknownuser")).thenReturn(Optional.empty());
+        when(userRepository.findByAuth0UserId("unknownuser")).thenReturn(Optional.empty());
 
         // Act
-        Optional<User> result = userService.findByUserName("unknownuser");
+        Optional<User> result = userService.findUserByAuth0UserId("unknownuser");
 
         // Assert
         assertFalse(result.isPresent());
 
-        verify(userRepository, times(1)).findByUsername("unknownuser");
+        verify(userRepository, times(1)).findByAuth0UserId("unknownuser");
     }
 }

@@ -3,10 +3,10 @@ package org.atonic.cryptexsimple.controller;
 import lombok.AllArgsConstructor;
 import org.atonic.cryptexsimple.controller.payload.request.CryptoWalletBalanceRequest;
 import org.atonic.cryptexsimple.controller.payload.response.MessageResponse;
-import org.atonic.cryptexsimple.controller.payload.response.UserCryptoWalletBalanceResponse;
-import org.atonic.cryptexsimple.model.dto.CryptoWalletBalanceDTO;
+import org.atonic.cryptexsimple.controller.payload.response.crypto.wallet.UserCryptoWalletBalanceResponse;
+import org.atonic.cryptexsimple.model.dto.CryptoWalletDTO;
 import org.atonic.cryptexsimple.model.entity.CryptoWallet;
-import org.atonic.cryptexsimple.model.entity.Cryptocurrency;
+import org.atonic.cryptexsimple.model.entity.User;
 import org.atonic.cryptexsimple.model.repository.CryptocurrencyRepository;
 import org.atonic.cryptexsimple.service.CryptoWalletService;
 import org.atonic.cryptexsimple.service.UserService;
@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("api/v1/crypto-wallet")
@@ -29,9 +30,30 @@ public class CryptoWalletController {
 
     private final CryptocurrencyRepository cryptocurrencyRepository;
 
-    @PostMapping("/balance")
+    @PostMapping("/create")
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
-    public ResponseEntity<MessageResponse> addBalanceToFIATWallet(@AuthenticationPrincipal Jwt jwt, @RequestBody CryptoWalletBalanceRequest request) {
+    public ResponseEntity<MessageResponse> createCryptoWallet(@AuthenticationPrincipal Jwt jwt, @RequestBody String walletName) {
+        Optional<User> optionalUser = userService.getUser(jwt);
+        if (optionalUser.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Optional<CryptoWallet> cryptoWalletOptional = cryptoWalletService.createNewWallet(optionalUser.get(), walletName);
+        if (cryptoWalletOptional.isEmpty()) {
+            return ResponseEntity.badRequest().body(new MessageResponse(
+                MessageFormat.format("Crypto wallet with name: {0} couldn''t be created", walletName))
+            );
+        }
+        return ResponseEntity.ok(new MessageResponse(
+            MessageFormat.format("Crypto wallet with name: {0} was created", walletName))
+        );
+    }
+
+    @PostMapping("/deposit")
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
+    public ResponseEntity<MessageResponse> depositCryptoToCryptoWallet(
+        @AuthenticationPrincipal Jwt jwt,
+        @RequestBody CryptoWalletBalanceRequest request) {
         userService.findUserByAuth0UserId(jwt.getSubject())
             .ifPresent(foundUser -> cryptoWalletService.updateBalance(foundUser, request.getSymbol(), request.getAmount()));
 
@@ -41,33 +63,44 @@ public class CryptoWalletController {
         );
     }
 
-    @GetMapping("/balance")
+    @PostMapping("/balances")
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
-    public ResponseEntity<UserCryptoWalletBalanceResponse> getCryptoWalletBalances(@AuthenticationPrincipal Jwt jwt) {
-        CryptoWallet cryptoWallet = cryptoWalletService.getCryptoWallet(userService.findUserByAuth0UserId(jwt.getSubject()).get());
+    public ResponseEntity<UserCryptoWalletBalanceResponse> getCryptoWalletBalances(
+        @AuthenticationPrincipal Jwt jwt,
+        @RequestBody List<Long> walletIds) {
+        Optional<User> userOptional = userService.getUser(jwt);
+        if (userOptional.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
 
-        List<CryptoWalletBalanceDTO> balances = getCryptoBalancesFromCryptoWallet(cryptoWallet);
+        List<CryptoWalletDTO> cryptoWallets = new ArrayList<>();
+
+        walletIds.forEach(id -> cryptoWalletService.getCryptoWallet(userOptional.get(), id).ifPresent(cryptoWallets::add));
 
         return ResponseEntity.ok(UserCryptoWalletBalanceResponse.builder()
-            .auth0UserId(cryptoWallet.getUser().getAuth0UserId())
-            .cryptoWalletId(cryptoWallet.getId())
-            .balances(balances)
+            .auth0UserId(jwt.getSubject())
+            .wallets(cryptoWallets)
             .build()
         );
     }
 
-    private List<CryptoWalletBalanceDTO> getCryptoBalancesFromCryptoWallet(CryptoWallet cryptoWallet) {
-        List<CryptoWalletBalanceDTO> balances = new ArrayList<>();
-        List<Cryptocurrency> cryptos = cryptocurrencyRepository.findAll();
-        for (Cryptocurrency crypto : cryptos) {
-            balances.add(
-                CryptoWalletBalanceDTO.builder()
-                    .cryptocurrency(crypto.getSymbol().value)
-                    .balance(cryptoWalletService.getBalance(cryptoWallet.getUser(), crypto.getSymbol()).getBalance())
-                    .build()
-            );
+    @GetMapping("/ids")
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
+    public ResponseEntity<List<Long>> getAllCryptoWalletIds(@AuthenticationPrincipal Jwt jwt) {
+        Optional<User> userOptional = userService.getUser(jwt);
+        if (userOptional.isEmpty()) {
+            return ResponseEntity.notFound().build();
         }
 
-        return balances;
+        List<CryptoWallet> cryptoWallets = cryptoWalletService.getCryptoWallets(userOptional.get());
+        if (cryptoWallets.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+
+        return ResponseEntity.ok(cryptoWallets.stream()
+            .map(CryptoWallet::getId)
+            .toList()
+        );
     }
 }

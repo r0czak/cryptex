@@ -1,4 +1,4 @@
-package org.atonic.cryptexsimple.controller.payload.response;
+package org.atonic.cryptexsimple.controller.payload.response.fiat.wallet;
 
 import lombok.Builder;
 import lombok.Data;

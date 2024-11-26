@@ -1,7 +1,10 @@
 package org.atonic.cryptexsimple.model.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,14 +14,15 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name="crypto_wallet")
+@Table(name = "crypto_wallet")
 public class CryptoWallet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    @MapsId
+    private String walletName;
+
+    @ManyToOne
     private User user;
 
     @OneToMany(mappedBy = "cryptoWallet", cascade = CascadeType.ALL, orphanRemoval = true)

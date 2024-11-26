@@ -19,7 +19,7 @@ public class AuthController {
 
     @PostMapping("/signin")
     public ResponseEntity<AuthResponse> authenticateUser(@AuthenticationPrincipal Jwt jwt) {
-        User user = userService.getOrRegisterUser(jwt);
+        User user = userService.registerUser(jwt);
         return ResponseEntity.ok(AuthResponse.builder()
             .jwt(jwt)
             .email(user.getEmail())

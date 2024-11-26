@@ -1,5 +1,6 @@
 package org.atonic.cryptexsimple.service.impl;
 
+import org.atonic.cryptexsimple.model.dto.CryptoWalletDTO;
 import org.atonic.cryptexsimple.model.entity.*;
 import org.atonic.cryptexsimple.model.enums.CryptoSymbol;
 import org.atonic.cryptexsimple.model.repository.CryptoWalletBalanceRepository;
@@ -8,14 +9,15 @@ import org.atonic.cryptexsimple.model.repository.CryptocurrencyRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -41,8 +43,7 @@ class CryptoWalletServiceImplTest {
 
     @BeforeEach
     public void setUp() {
-        user = new User("testuser", "test@example.com", "password");
-        user.setId(1L);
+        user = new User(1L, "testuser", "test@example.com", true);
 
         wallet = new CryptoWallet();
         wallet.setId(user.getId());
@@ -64,9 +65,10 @@ class CryptoWalletServiceImplTest {
         when(cryptoWalletRepository.findById(user.getId())).thenReturn(Optional.of(wallet));
 
         // Act
-        CryptoWallet actualWallet = cryptoWalletService.getCryptoWallet(user);
+        Optional<CryptoWalletDTO> actualWallet = cryptoWalletService.getCryptoWallet(user, 1L);
 
         // Assert
+        assertEquals(true, actualWallet.isPresent());
         assertEquals(wallet, actualWallet);
     }
 

@@ -3,7 +3,7 @@ package org.atonic.cryptexsimple.controller;
 import lombok.AllArgsConstructor;
 import org.atonic.cryptexsimple.controller.payload.request.FIATWalletBalanceRequest;
 import org.atonic.cryptexsimple.controller.payload.response.MessageResponse;
-import org.atonic.cryptexsimple.controller.payload.response.UserFIATWalletBalanceResponse;
+import org.atonic.cryptexsimple.controller.payload.response.fiat.wallet.UserFIATWalletBalanceResponse;
 import org.atonic.cryptexsimple.model.entity.FIATWallet;
 import org.atonic.cryptexsimple.service.FIATWalletService;
 import org.atonic.cryptexsimple.service.UserService;
@@ -22,7 +22,7 @@ public class FiatWalletController {
     private final FIATWalletService fiatWalletService;
     private final UserService userService;
 
-    @PostMapping("/balance")
+    @PostMapping("/deposit")
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     public ResponseEntity<MessageResponse> addBalanceToFIATWallet(@AuthenticationPrincipal Jwt jwt, @RequestBody FIATWalletBalanceRequest request) {
         userService.findUserByAuth0UserId(jwt.getSubject())

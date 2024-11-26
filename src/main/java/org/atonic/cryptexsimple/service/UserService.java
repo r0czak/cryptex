@@ -7,9 +7,11 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import java.util.Optional;
 
 public interface UserService {
-    User getOrRegisterUser(Jwt jwt);
+    Optional<User> getUser(Jwt jwt);
 
-    User registerUser(String auth0UserId, String email);
+    User registerUser(Jwt jwt);
+
+    User addUser(String auth0UserId, String email);
 
     Optional<User> findUserByAuth0UserId(String auth0UserId);
 }
