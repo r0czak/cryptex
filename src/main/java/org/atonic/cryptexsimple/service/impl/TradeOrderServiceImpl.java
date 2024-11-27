@@ -1,6 +1,5 @@
 package org.atonic.cryptexsimple.service.impl;
 
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.atonic.cryptexsimple.model.entity.*;
 import org.atonic.cryptexsimple.model.enums.CryptoSymbol;
@@ -9,9 +8,9 @@ import org.atonic.cryptexsimple.model.enums.OrderType;
 import org.atonic.cryptexsimple.model.repository.CryptocurrencyRepository;
 import org.atonic.cryptexsimple.model.repository.TradeOrderRepository;
 import org.atonic.cryptexsimple.model.repository.TradeRepository;
+import org.atonic.cryptexsimple.service.CryptoWalletService;
 import org.atonic.cryptexsimple.service.FIATWalletService;
 import org.atonic.cryptexsimple.service.TradeOrderService;
-import org.atonic.cryptexsimple.service.CryptoWalletService;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -20,7 +19,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -41,8 +39,11 @@ public class TradeOrderServiceImpl implements TradeOrderService {
             if (wallet.getBalance().compareTo(tradeOrder.getAmount().multiply(tradeOrder.getPrice())) < 0) {
                 return Optional.empty();
             }
-        } else if(OrderType.SELL.equals(tradeOrder.getType())) {
-            CryptoWalletBalance balance = cryptoWalletService.getBalance(tradeOrder.getUser(), tradeOrder.getCryptocurrency().getSymbol());
+        } else if (OrderType.SELL.equals(tradeOrder.getType())) {
+            CryptoWalletBalance balance = cryptoWalletService.getBalance(
+                tradeOrder.getUser(),
+                tradeOrder.getCryptoWallet().getId(),
+                tradeOrder.getCryptocurrency().getSymbol());
             if (balance.getBalance().compareTo(tradeOrder.getAmount()) < 0) {
                 return Optional.empty();
             }
@@ -66,7 +67,7 @@ public class TradeOrderServiceImpl implements TradeOrderService {
             .toList();
 
         for (TradeOrder buyOrder : buyOrders) {
-            for (TradeOrder sellOrder: sellOrders) {
+            for (TradeOrder sellOrder : sellOrders) {
                 if (buyOrder.getPrice().compareTo(sellOrder.getPrice()) >= 0 && !Objects.equals(buyOrder.getUser().getId(), sellOrder.getId())) {
                     executeTrade(buyOrder, sellOrder, crypto);
                 }
@@ -77,7 +78,7 @@ public class TradeOrderServiceImpl implements TradeOrderService {
     @Override
     public List<TradeOrder> getOpenTradeOrders(CryptoSymbol symbol) {
         Cryptocurrency crypto = cryptocurrencyRepository.findBySymbol(symbol)
-        .orElseThrow(() -> new RuntimeException("Cryptocurrency not found"));
+            .orElseThrow(() -> new RuntimeException("Cryptocurrency not found"));
 
         return tradeOrderRepository.findByStatusAndCryptocurrency(OrderStatus.OPEN, crypto);
     }
@@ -111,10 +112,10 @@ public class TradeOrderServiceImpl implements TradeOrderService {
 
         // Update wallets
         fiatWalletService.updateBalance(buyOrder.getUser(), totalCost.negate());
-        cryptoWalletService.updateBalance(buyOrder.getUser(), crypto.getSymbol(), tradeAmount);
+        cryptoWalletService.updateBalance(buyOrder.getUser(), buyOrder.getCryptoWallet().getId(), crypto.getSymbol(), tradeAmount);
 
         fiatWalletService.updateBalance(sellOrder.getUser(), totalCost);
-        cryptoWalletService.updateBalance(sellOrder.getUser(), crypto.getSymbol(), tradeAmount.negate());
+        cryptoWalletService.updateBalance(sellOrder.getUser(), sellOrder.getCryptoWallet().getId(), crypto.getSymbol(), tradeAmount.negate());
     }
 
 }

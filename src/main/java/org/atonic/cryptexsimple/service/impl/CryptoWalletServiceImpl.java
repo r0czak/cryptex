@@ -50,8 +50,8 @@ public class CryptoWalletServiceImpl implements CryptoWalletService {
     }
 
     @Override
-    public CryptoWalletBalance getBalance(User user, CryptoSymbol symbol) {
-        CryptoWallet cryptoWallet = cryptoWalletRepository.findById(user.getId())
+    public CryptoWalletBalance getBalance(User user, Long cryptoWalletId, CryptoSymbol symbol) {
+        CryptoWallet cryptoWallet = cryptoWalletRepository.findByIdAndUser(cryptoWalletId, user)
             .orElseThrow(() -> new RuntimeException("Wallet not found"));
 
         Cryptocurrency crypto = cryptocurrencyRepository.findBySymbol(symbol)
@@ -67,8 +67,8 @@ public class CryptoWalletServiceImpl implements CryptoWalletService {
 
     @Override
     @Transactional
-    public void updateBalance(User user, CryptoSymbol symbol, BigDecimal amount) {
-        CryptoWalletBalance balance = getBalance(user, symbol);
+    public void updateBalance(User user, Long cryptoWalletId, CryptoSymbol symbol, BigDecimal amount) {
+        CryptoWalletBalance balance = getBalance(user, cryptoWalletId, symbol);
         balance.setBalance(balance.getBalance().add(amount));
         cryptoWalletBalanceRepository.save(balance);
     }

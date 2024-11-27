@@ -7,6 +7,7 @@ import org.atonic.cryptexsimple.controller.payload.response.crypto.wallet.UserCr
 import org.atonic.cryptexsimple.model.dto.CryptoWalletDTO;
 import org.atonic.cryptexsimple.model.entity.CryptoWallet;
 import org.atonic.cryptexsimple.model.entity.User;
+import org.atonic.cryptexsimple.model.enums.CryptoSymbol;
 import org.atonic.cryptexsimple.model.repository.CryptocurrencyRepository;
 import org.atonic.cryptexsimple.service.CryptoWalletService;
 import org.atonic.cryptexsimple.service.UserService;
@@ -55,10 +56,10 @@ public class CryptoWalletController {
         @AuthenticationPrincipal Jwt jwt,
         @RequestBody CryptoWalletBalanceRequest request) {
         userService.findUserByAuth0UserId(jwt.getSubject())
-            .ifPresent(foundUser -> cryptoWalletService.updateBalance(foundUser, request.getSymbol(), request.getAmount()));
+            .ifPresent(foundUser -> cryptoWalletService.updateBalance(foundUser, request.getCryptoWalletId(), CryptoSymbol.valueOf(request.getSymbol()), request.getAmount()));
 
         return ResponseEntity.ok(new MessageResponse(
-                MessageFormat.format("{0} crypto wallet balance updated for user: {1}", request.getSymbol().value, jwt.getClaim("email"))
+                MessageFormat.format("{0} crypto wallet balance updated for user: {1}", request.getSymbol(), jwt.getClaim("email"))
             )
         );
     }

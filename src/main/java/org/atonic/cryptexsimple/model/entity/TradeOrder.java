@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Builder
-@Table(name="trade_order")
+@Table(name = "trade_order")
 public class TradeOrder {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,6 +32,9 @@ public class TradeOrder {
 
     @ManyToOne
     private User user;
+
+    @ManyToOne
+    private CryptoWallet cryptoWallet;
 
     @ManyToOne
     private Cryptocurrency cryptocurrency;

@@ -10,7 +10,9 @@ import java.math.BigDecimal;
 @Builder
 public class CryptoWalletBalanceDTO {
     @NonNull
-    String cryptocurrency;
+    String cryptocurrencyName;
+    @NonNull
+    String cryptocurrencySymbol;
     @NonNull
     BigDecimal balance;
 }

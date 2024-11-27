@@ -10,11 +10,17 @@ import org.mapstruct.Named;
 @Mapper(componentModel = "spring")
 public abstract class CryptoWalletBalanceMapper {
 
-    @Mapping(target = "cryptocurrency", source = "cryptocurrency", qualifiedByName = "mapCryptocurrency")
+    @Mapping(target = "cryptocurrencyName", source = "cryptocurrency", qualifiedByName = "mapCryptocurrencyToName")
+    @Mapping(target = "cryptocurrencySymbol", source = "cryptocurrency", qualifiedByName = "mapCryptocurrencyToSymbol")
     public abstract CryptoWalletBalanceDTO toCryptoWalletBalanceDTO(CryptoWalletBalance cryptoWalletBalance);
 
-    @Named("mapCryptocurrency")
-    String mapCryptocurrency(Cryptocurrency source) {
+    @Named("mapCryptocurrencyToName")
+    String mapCryptocurrencyToName(Cryptocurrency source) {
         return source.getSymbol().value;
+    }
+
+    @Named("mapCryptocurrencyToSymbol")
+    String mapCryptocurrencyToSymbol(Cryptocurrency source) {
+        return source.getSymbol().name();
     }
 }
