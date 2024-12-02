@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -33,20 +34,20 @@ public class CryptoWalletController {
 
     @PostMapping("/create")
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
-    public ResponseEntity<MessageResponse> createCryptoWallet(@AuthenticationPrincipal Jwt jwt, @RequestBody String walletName) {
+    public ResponseEntity<MessageResponse> createCryptoWallet(@AuthenticationPrincipal Jwt jwt, @RequestBody Map<String, String> data) {
         Optional<User> optionalUser = userService.getUser(jwt);
         if (optionalUser.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
-        Optional<CryptoWallet> cryptoWalletOptional = cryptoWalletService.createNewWallet(optionalUser.get(), walletName);
+        Optional<CryptoWallet> cryptoWalletOptional = cryptoWalletService.createNewWallet(optionalUser.get(), data.get("walletName"));
         if (cryptoWalletOptional.isEmpty()) {
             return ResponseEntity.badRequest().body(new MessageResponse(
-                MessageFormat.format("Crypto wallet with name: {0} couldn''t be created", walletName))
+                MessageFormat.format("Crypto wallet with name: {0} couldn''t be created", data.get("walletName")))
             );
         }
         return ResponseEntity.ok(new MessageResponse(
-            MessageFormat.format("Crypto wallet with name: {0} was created", walletName))
+            MessageFormat.format("Crypto wallet with name: {0} was created", data.get("walletName")))
         );
     }
 
