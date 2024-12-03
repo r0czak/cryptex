@@ -41,7 +41,6 @@ public class TradeOrderServiceImpl implements TradeOrderService {
             }
         } else if (OrderType.SELL.equals(tradeOrder.getType())) {
             CryptoWalletBalance balance = cryptoWalletService.getBalance(
-                tradeOrder.getUser(),
                 tradeOrder.getCryptoWallet().getId(),
                 tradeOrder.getCryptocurrency().getSymbol());
             if (balance.getBalance().compareTo(tradeOrder.getAmount()) < 0) {
@@ -112,10 +111,10 @@ public class TradeOrderServiceImpl implements TradeOrderService {
 
         // Update wallets
         fiatWalletService.updateBalance(buyOrder.getUser(), totalCost.negate());
-        cryptoWalletService.updateBalance(buyOrder.getUser(), buyOrder.getCryptoWallet().getId(), crypto.getSymbol(), tradeAmount);
+        cryptoWalletService.updateBalance(buyOrder.getCryptoWallet().getId(), crypto.getSymbol(), tradeAmount);
 
         fiatWalletService.updateBalance(sellOrder.getUser(), totalCost);
-        cryptoWalletService.updateBalance(sellOrder.getUser(), sellOrder.getCryptoWallet().getId(), crypto.getSymbol(), tradeAmount.negate());
+        cryptoWalletService.updateBalance(sellOrder.getCryptoWallet().getId(), crypto.getSymbol(), tradeAmount.negate());
     }
 
 }

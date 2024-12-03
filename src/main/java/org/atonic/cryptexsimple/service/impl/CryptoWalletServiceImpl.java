@@ -29,8 +29,8 @@ public class CryptoWalletServiceImpl implements CryptoWalletService {
     private final CryptoWalletBalanceMapper cryptoWalletBalanceMapper;
 
     @Override
-    public Optional<CryptoWalletDTO> getCryptoWallet(User user, Long id) {
-        Optional<CryptoWallet> cryptoWalletOptional = cryptoWalletRepository.findByIdAndUser(id, user);
+    public Optional<CryptoWalletDTO> getCryptoWallet(Long cryptoWalletId) {
+        Optional<CryptoWallet> cryptoWalletOptional = cryptoWalletRepository.findById(cryptoWalletId);
         if (cryptoWalletOptional.isEmpty()) {
             return Optional.empty();
         }
@@ -50,8 +50,8 @@ public class CryptoWalletServiceImpl implements CryptoWalletService {
     }
 
     @Override
-    public CryptoWalletBalance getBalance(User user, Long cryptoWalletId, CryptoSymbol symbol) {
-        CryptoWallet cryptoWallet = cryptoWalletRepository.findByIdAndUser(cryptoWalletId, user)
+    public CryptoWalletBalance getBalance(Long cryptoWalletId, CryptoSymbol symbol) {
+        CryptoWallet cryptoWallet = cryptoWalletRepository.findById(cryptoWalletId)
             .orElseThrow(() -> new RuntimeException("Wallet not found"));
 
         Cryptocurrency crypto = cryptocurrencyRepository.findBySymbol(symbol)
@@ -67,8 +67,8 @@ public class CryptoWalletServiceImpl implements CryptoWalletService {
 
     @Override
     @Transactional
-    public void updateBalance(User user, Long cryptoWalletId, CryptoSymbol symbol, BigDecimal amount) {
-        CryptoWalletBalance balance = getBalance(user, cryptoWalletId, symbol);
+    public void updateBalance(Long cryptoWalletId, CryptoSymbol symbol, BigDecimal amount) {
+        CryptoWalletBalance balance = getBalance(cryptoWalletId, symbol);
         balance.setBalance(balance.getBalance().add(amount));
         cryptoWalletBalanceRepository.save(balance);
     }
@@ -101,4 +101,54 @@ public class CryptoWalletServiceImpl implements CryptoWalletService {
 
         return Optional.of(newWallet);
     }
+
+    @Override
+    public void renameWallet(Long cryptoWalletId, String walletName) {
+        Optional<CryptoWallet> cryptoWalletOptional = cryptoWalletRepository.findById(cryptoWalletId);
+        if (cryptoWalletOptional.isPresent()) {
+            CryptoWallet cryptoWallet = cryptoWalletOptional.get();
+            cryptoWallet.setWalletName(walletName);
+            cryptoWalletRepository.save(cryptoWallet);
+        }
+    }
+
+    @Override
+    public Optional<CryptoWallet> transferAllFunds(Long sourceWalletId, Long targetWalletId) {
+        if (sourceWalletId.equals(targetWalletId)) {
+            return Optional.empty();
+        }
+
+        Optional<CryptoWallet> sourceCryptoWallet = cryptoWalletRepository.findById(sourceWalletId);
+        Optional<CryptoWallet> targetCryptoWallet = cryptoWalletRepository.findById(targetWalletId);
+
+        if (sourceCryptoWallet.isEmpty() || targetCryptoWallet.isEmpty()) {
+            return Optional.empty();
+        }
+
+        CryptoWallet sourceWallet = sourceCryptoWallet.get();
+        CryptoWallet targetWallet = targetCryptoWallet.get();
+
+        sourceWallet.getBalances().forEach(balance -> {
+            CryptoWalletBalanceId targetBalanceId = new CryptoWalletBalanceId();
+            targetBalanceId.setCryptoWalletId(targetWalletId);
+            targetBalanceId.setCryptocurrencyId(balance.getCryptocurrency().getId());
+
+            cryptoWalletBalanceRepository.findById(targetBalanceId).ifPresent(targetBalance -> {
+                targetBalance.setBalance(targetBalance.getBalance().add(balance.getBalance()));
+                cryptoWalletBalanceRepository.save(targetBalance);
+            });
+        });
+
+        return Optional.of(targetWallet);
+    }
+
+    @Override
+    public void deleteCryptoWallet(Long cryptoWalletId) {
+        Optional<CryptoWallet> cryptoWallet = cryptoWalletRepository.findById(cryptoWalletId);
+
+        if (cryptoWallet.isPresent()) {
+            cryptoWalletRepository.deleteById(cryptoWalletId);
+        }
+    }
+
 }

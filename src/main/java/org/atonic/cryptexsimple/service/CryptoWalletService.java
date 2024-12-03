@@ -11,13 +11,19 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CryptoWalletService {
-    Optional<CryptoWalletDTO> getCryptoWallet(User user, Long cryptoWalletId);
+    Optional<CryptoWalletDTO> getCryptoWallet(Long cryptoWalletId);
 
     List<CryptoWallet> getCryptoWallets(User user);
 
     Optional<CryptoWallet> createNewWallet(User user, String walletName);
 
-    CryptoWalletBalance getBalance(User user, Long cryptoWalletId, CryptoSymbol symbol);
+    void renameWallet(Long cryptoWalletId, String walletName);
 
-    void updateBalance(User user, Long cryptoWalletId, CryptoSymbol symbol, BigDecimal amount);
+    Optional<CryptoWallet> transferAllFunds(Long sourceWalletId, Long targetWalletId);
+
+    void deleteCryptoWallet(Long cryptoWalletId);
+
+    CryptoWalletBalance getBalance(Long cryptoWalletId, CryptoSymbol symbol);
+
+    void updateBalance(Long cryptoWalletId, CryptoSymbol symbol, BigDecimal amount);
 }

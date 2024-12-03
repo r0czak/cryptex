@@ -1,7 +1,10 @@
 package org.atonic.cryptexsimple.model.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 
@@ -10,7 +13,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name="crypto_wallet_balance")
+@Table(name = "crypto_wallet_balance")
 public class CryptoWalletBalance {
     @EmbeddedId
     private CryptoWalletBalanceId id = new CryptoWalletBalanceId();
@@ -25,5 +28,6 @@ public class CryptoWalletBalance {
     @JoinColumn(name = "cryptocurrency_id")
     private Cryptocurrency cryptocurrency;
 
+    @Column(precision = 19, scale = 8)
     private BigDecimal balance = BigDecimal.ZERO;
 }

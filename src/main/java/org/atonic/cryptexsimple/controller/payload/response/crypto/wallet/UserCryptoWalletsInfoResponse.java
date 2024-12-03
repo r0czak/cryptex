@@ -9,7 +9,7 @@ import java.util.List;
 
 @Data
 @Builder
-public class UserCryptoWalletBalanceResponse {
+public class UserCryptoWalletsInfoResponse {
     @NonNull
     String auth0UserId;
     @NonNull
