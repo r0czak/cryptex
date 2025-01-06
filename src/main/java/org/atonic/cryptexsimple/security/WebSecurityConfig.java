@@ -1,19 +1,27 @@
 package org.atonic.cryptexsimple.security;
 
+import org.atonic.cryptexsimple.security.jwt.JwtConfig;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.context.SecurityContextHolderFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.atonic.cryptexsimple.security.jwt.JwtConfig;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -21,12 +29,19 @@ import java.util.Arrays;
 public class WebSecurityConfig {
     private final JwtConfig jwtConfig;
 
+    @Value("${dev.auth0-id}")
+    private String auth0Id;
+
+    @Value("${dev.email}")
+    private String email;
+
     public WebSecurityConfig(JwtConfig jwtConfig) {
         this.jwtConfig = jwtConfig;
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    @Profile("prod")
+    public SecurityFilterChain prodFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/api/v1/public").permitAll()
@@ -41,6 +56,44 @@ public class WebSecurityConfig {
 
         return http.build();
     }
+
+
+    @Bean
+    @Profile("dev")
+    public SecurityFilterChain devFilterChain(HttpSecurity http) throws Exception {
+        http.csrf(AbstractHttpConfigurer::disable)
+            .authorizeHttpRequests(authorize -> authorize
+                .anyRequest().permitAll()
+            )
+            .cors(Customizer.withDefaults())
+            .addFilterAfter((request, response, chain) -> {
+                Jwt jwt = Jwt.withTokenValue("token")
+                    .header("alg", "RS256")
+                    .claim("sub", auth0Id)
+                    .claim("email", email)
+                    .claim("permissions", List.of(
+                        "read:orders",
+                        "read:users",
+                        "write:admin_role",
+                        "write:orders",
+                        "write:users"))
+                    .build();
+
+                List<SimpleGrantedAuthority> authorities = List.of(
+                    new SimpleGrantedAuthority("USER"),
+                    new SimpleGrantedAuthority("ADMIN")
+                );
+
+                JwtAuthenticationToken authentication = new JwtAuthenticationToken(jwt, authorities);
+
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+
+                chain.doFilter(request, response);
+            }, SecurityContextHolderFilter.class);
+
+        return http.build();
+    }
+
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {

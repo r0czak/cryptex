@@ -5,7 +5,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 @Data
-public class CryptoWalletBalanceRequest {
+public class CryptoWalletDepositRequest {
     private Long cryptoWalletId;
     private String symbol;
     private BigDecimal amount;

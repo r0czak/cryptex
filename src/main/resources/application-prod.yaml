@@ -9,6 +9,7 @@ spring:
   application:
     name: cryptex-simple
 
+
   datasource:
     url: jdbc:mysql://localhost:3306/cryptex_simple
     username: ${database.mysql_username}
@@ -30,27 +31,27 @@ spring:
           issuer-uri: ${okta.issuer}
           audiences: ${okta.audience}
 
-#  security:
-#    oauth2:
-#      client:
-#        registration:
-#          auth0:
-#            client-id: ${okta.client_id}
-#            client-secret: ${okta.client_secret}
-#            scope:
-#              - openid
-#              - profile
-#              - email
-##            authorization-grant-type: authorization_code
-##            redirect-uri: ${okta.redirect_uri}
-##            client-name: Auth0
-#        provider:
-#          auth0:
-#            issuer-uri: ${okta.issuer}
+  #  security:
+  #    oauth2:
+  #      client:
+  #        registration:
+  #          auth0:
+  #            client-id: ${okta.client_id}
+  #            client-secret: ${okta.client_secret}
+  #            scope:
+  #              - openid
+  #              - profile
+  #              - email
+  ##            authorization-grant-type: authorization_code
+  ##            redirect-uri: ${okta.redirect_uri}
+  ##            client-name: Auth0
+  #        provider:
+  #          auth0:
+  #            issuer-uri: ${okta.issuer}
 
 
-#  autoconfigure:
-#    exclude: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+  #  autoconfigure:
+  #    exclude: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
 
   config:
     import: optional:classpath:secret.properties

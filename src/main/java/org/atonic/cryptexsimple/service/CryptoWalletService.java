@@ -13,7 +13,7 @@ import java.util.Optional;
 public interface CryptoWalletService {
     Optional<CryptoWalletDTO> getCryptoWallet(Long cryptoWalletId);
 
-    List<CryptoWallet> getCryptoWallets(User user);
+    List<CryptoWallet> getUserCryptoWallets(User user);
 
     Optional<CryptoWallet> createNewWallet(User user, String walletName);
 

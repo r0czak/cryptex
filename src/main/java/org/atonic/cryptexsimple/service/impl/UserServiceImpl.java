@@ -2,10 +2,7 @@ package org.atonic.cryptexsimple.service.impl;
 
 import lombok.AllArgsConstructor;
 import org.atonic.cryptexsimple.model.entity.*;
-import org.atonic.cryptexsimple.model.repository.CryptoWalletRepository;
-import org.atonic.cryptexsimple.model.repository.CryptocurrencyRepository;
-import org.atonic.cryptexsimple.model.repository.FIATWalletRepository;
-import org.atonic.cryptexsimple.model.repository.UserRepository;
+import org.atonic.cryptexsimple.model.repository.*;
 import org.atonic.cryptexsimple.service.UserService;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
@@ -19,8 +16,9 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final CryptoWalletRepository cryptoWalletRepository;
-    private final FIATWalletRepository fiatWalletRepository;
     private final CryptocurrencyRepository cryptocurrencyRepository;
+    private final FIATWalletRepository fiatWalletRepository;
+    private final FIATCurrencyRepository fiatCurrencyRepository;
 
     @Override
     public Optional<User> getUser(Jwt jwt) {
@@ -63,7 +61,15 @@ public class UserServiceImpl implements UserService {
 
         FIATWallet fiatWallet = new FIATWallet();
         fiatWallet.setUser(newUser);
-        fiatWallet.setBalance(BigDecimal.ZERO);
+
+        List<FIATCurrency> fiatCurrencies = fiatCurrencyRepository.findAll();
+        for (FIATCurrency fiatCurrency : fiatCurrencies) {
+            FIATWalletBalance balance = new FIATWalletBalance();
+            balance.setFiatWallet(fiatWallet);
+            balance.setFiatCurrency(fiatCurrency);
+            balance.setBalance(BigDecimal.ZERO);
+            fiatWallet.getBalances().add(balance);
+        }
 
         userRepository.save(newUser);
         fiatWalletRepository.save(fiatWallet);
