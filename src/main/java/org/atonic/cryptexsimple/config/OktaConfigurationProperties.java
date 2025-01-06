@@ -10,5 +10,5 @@ public record OktaConfigurationProperties(
     String client_secret,
     String redirect_uri,
     String post_logout_redirect_uri
-    ) {
+) {
 }

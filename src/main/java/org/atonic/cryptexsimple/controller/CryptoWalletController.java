@@ -1,7 +1,7 @@
 package org.atonic.cryptexsimple.controller;
 
 import lombok.AllArgsConstructor;
-import org.atonic.cryptexsimple.controller.payload.request.CryptoWalletBalanceRequest;
+import org.atonic.cryptexsimple.controller.payload.request.CryptoWalletDepositRequest;
 import org.atonic.cryptexsimple.controller.payload.request.RenameWalletRequest;
 import org.atonic.cryptexsimple.controller.payload.request.TransferFundsRequest;
 import org.atonic.cryptexsimple.controller.payload.response.MessageResponse;
@@ -90,12 +90,14 @@ public class CryptoWalletController {
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     public ResponseEntity<MessageResponse> depositCryptoToCryptoWallet(
         @AuthenticationPrincipal Jwt jwt,
-        @RequestBody CryptoWalletBalanceRequest request) {
+        @RequestBody CryptoWalletDepositRequest request) {
         userService.findUserByAuth0UserId(jwt.getSubject())
             .ifPresent(foundUser -> cryptoWalletService.updateBalance(request.getCryptoWalletId(), CryptoSymbol.valueOf(request.getSymbol()), request.getAmount()));
 
         return ResponseEntity.ok(new MessageResponse(
-                MessageFormat.format("{0} crypto wallet balance updated for user: {1}", request.getSymbol(), jwt.getClaim("email"))
+                MessageFormat.format("{0} crypto wallet balance updated for user: {1}",
+                    request.getSymbol(),
+                    jwt.getClaimAsString("email"))
             )
         );
     }
@@ -129,7 +131,7 @@ public class CryptoWalletController {
             return ResponseEntity.notFound().build();
         }
 
-        List<CryptoWallet> cryptoWallets = cryptoWalletService.getCryptoWallets(userOptional.get());
+        List<CryptoWallet> cryptoWallets = cryptoWalletService.getUserCryptoWallets(userOptional.get());
         if (cryptoWallets.isEmpty()) {
             return ResponseEntity.notFound().build();
         }

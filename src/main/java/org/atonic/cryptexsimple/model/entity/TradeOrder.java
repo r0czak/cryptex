@@ -38,4 +38,10 @@ public class TradeOrder {
 
     @ManyToOne
     private Cryptocurrency cryptocurrency;
+
+    @ManyToOne
+    private FIATWallet fiatWallet;
+
+    @ManyToOne
+    FIATCurrency fiatCurrency;
 }

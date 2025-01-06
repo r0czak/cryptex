@@ -3,6 +3,7 @@ package org.atonic.cryptexsimple.service.impl;
 import lombok.AllArgsConstructor;
 import org.atonic.cryptexsimple.model.entity.*;
 import org.atonic.cryptexsimple.model.enums.CryptoSymbol;
+import org.atonic.cryptexsimple.model.enums.FIATSymbol;
 import org.atonic.cryptexsimple.model.enums.OrderStatus;
 import org.atonic.cryptexsimple.model.enums.OrderType;
 import org.atonic.cryptexsimple.model.repository.CryptocurrencyRepository;
@@ -32,11 +33,14 @@ public class TradeOrderServiceImpl implements TradeOrderService {
 
     @Override
     public Optional<TradeOrder> placeOrder(TradeOrder tradeOrder) {
+        if (!tradeOrder.getFiatCurrency().getSymbol().equals(FIATSymbol.USD)) {
+            return Optional.empty();
+        }
         tradeOrder.setStatus(OrderStatus.OPEN);
         tradeOrder.setTimestamp(LocalDateTime.now());
         if (OrderType.BUY.equals(tradeOrder.getType())) {
-            FIATWallet wallet = fiatWalletService.getFIATWallet(tradeOrder.getUser());
-            if (wallet.getBalance().compareTo(tradeOrder.getAmount().multiply(tradeOrder.getPrice())) < 0) {
+            FIATWallet wallet = fiatWalletService.getUserFIATWallets(tradeOrder.getUser()).getFirst();
+            if (wallet.getBalances().getFirst().getBalance().compareTo(tradeOrder.getAmount().multiply(tradeOrder.getPrice())) < 0) {
                 return Optional.empty();
             }
         } else if (OrderType.SELL.equals(tradeOrder.getType())) {
@@ -110,10 +114,10 @@ public class TradeOrderServiceImpl implements TradeOrderService {
         BigDecimal totalCost = tradeAmount.multiply(sellOrder.getPrice());
 
         // Update wallets
-        fiatWalletService.updateBalance(buyOrder.getUser(), totalCost.negate());
+        fiatWalletService.updateBalance(buyOrder.getFiatWallet().getId(), buyOrder.getFiatCurrency().getSymbol(), totalCost.negate());
         cryptoWalletService.updateBalance(buyOrder.getCryptoWallet().getId(), crypto.getSymbol(), tradeAmount);
 
-        fiatWalletService.updateBalance(sellOrder.getUser(), totalCost);
+        fiatWalletService.updateBalance(sellOrder.getFiatWallet().getId(), buyOrder.getFiatCurrency().getSymbol(), totalCost);
         cryptoWalletService.updateBalance(sellOrder.getCryptoWallet().getId(), crypto.getSymbol(), tradeAmount.negate());
     }
 

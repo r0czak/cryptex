@@ -12,4 +12,6 @@ public class PlaceOrderRequest {
     private CryptoSymbol symbol;
     private BigDecimal amount;
     private BigDecimal price;
+    private Long cryptoWalletId;
+    private Long fiatWalletId;
 }

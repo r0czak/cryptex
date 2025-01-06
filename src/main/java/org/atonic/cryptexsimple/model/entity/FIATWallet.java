@@ -6,22 +6,23 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name="fiat_wallet")
+@Table(name = "fiat_wallet")
 public class FIATWallet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private BigDecimal balance;
-
     @OneToOne
-    @MapsId
     private User user;
+
+    @OneToMany(mappedBy = "fiatWallet", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FIATWalletBalance> balances = new ArrayList<>();
 }

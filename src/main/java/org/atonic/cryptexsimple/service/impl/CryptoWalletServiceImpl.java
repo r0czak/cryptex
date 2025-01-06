@@ -45,7 +45,7 @@ public class CryptoWalletServiceImpl implements CryptoWalletService {
     }
 
     @Override
-    public List<CryptoWallet> getCryptoWallets(User user) {
+    public List<CryptoWallet> getUserCryptoWallets(User user) {
         return cryptoWalletRepository.findAllByUserOrderById(user);
     }
 
