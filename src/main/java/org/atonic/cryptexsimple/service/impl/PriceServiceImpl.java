@@ -2,9 +2,11 @@ package org.atonic.cryptexsimple.service.impl;
 
 import lombok.AllArgsConstructor;
 import org.atonic.cryptexsimple.model.dto.CryptoCurrencyPriceDTO;
-import org.atonic.cryptexsimple.model.entity.Cryptocurrency;
-import org.atonic.cryptexsimple.model.entity.Trade;
+import org.atonic.cryptexsimple.model.entity.jpa.Cryptocurrency;
+import org.atonic.cryptexsimple.model.entity.jpa.FIATCurrency;
+import org.atonic.cryptexsimple.model.entity.jpa.Trade;
 import org.atonic.cryptexsimple.model.enums.CryptoSymbol;
+import org.atonic.cryptexsimple.model.enums.FIATSymbol;
 import org.atonic.cryptexsimple.service.PriceService;
 import org.atonic.cryptexsimple.service.TradeService;
 import org.springframework.stereotype.Service;
@@ -51,9 +53,15 @@ public class PriceServiceImpl implements PriceService {
         };
 
         List<Trade> trades = new ArrayList<>();
-        trades.add(new Trade(0L, BigDecimal.ONE, price, LocalDateTime.now(), null, null, new Cryptocurrency(0L, cryptoSymbol)));
-        trades.add(new Trade(0L, BigDecimal.ONE, price, LocalDateTime.now(), null, null, new Cryptocurrency(0L, cryptoSymbol)));
-        trades.add(new Trade(0L, BigDecimal.ONE, price, LocalDateTime.now(), null, null, new Cryptocurrency(0L, cryptoSymbol)));
+        trades.add(new Trade(0L, BigDecimal.ONE, price, LocalDateTime.now(),
+            null, null, null, null, null, null,
+            new FIATCurrency(0L, FIATSymbol.USD), new Cryptocurrency(0L, cryptoSymbol)));
+        trades.add(new Trade(0L, BigDecimal.ONE, price, LocalDateTime.now(),
+            null, null, null, null, null, null,
+            new FIATCurrency(0L, FIATSymbol.USD), new Cryptocurrency(0L, cryptoSymbol)));
+        trades.add(new Trade(0L, BigDecimal.ONE, price, LocalDateTime.now(),
+            null, null, null, null, null, null,
+            new FIATCurrency(0L, FIATSymbol.USD), new Cryptocurrency(0L, cryptoSymbol)));
         return trades;
     }
 }

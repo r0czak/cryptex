@@ -1,11 +1,11 @@
 package org.atonic.cryptexsimple.service.impl;
 
 import org.atonic.cryptexsimple.model.dto.CryptoWalletDTO;
-import org.atonic.cryptexsimple.model.entity.*;
+import org.atonic.cryptexsimple.model.entity.jpa.*;
 import org.atonic.cryptexsimple.model.enums.CryptoSymbol;
-import org.atonic.cryptexsimple.model.repository.CryptoWalletBalanceRepository;
-import org.atonic.cryptexsimple.model.repository.CryptoWalletRepository;
-import org.atonic.cryptexsimple.model.repository.CryptocurrencyRepository;
+import org.atonic.cryptexsimple.model.repository.jpa.CryptoWalletBalanceRepository;
+import org.atonic.cryptexsimple.model.repository.jpa.CryptoWalletRepository;
+import org.atonic.cryptexsimple.model.repository.jpa.CryptocurrencyRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

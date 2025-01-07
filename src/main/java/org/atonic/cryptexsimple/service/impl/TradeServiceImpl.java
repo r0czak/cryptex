@@ -1,11 +1,11 @@
 package org.atonic.cryptexsimple.service.impl;
 
 import lombok.AllArgsConstructor;
-import org.atonic.cryptexsimple.model.entity.Cryptocurrency;
-import org.atonic.cryptexsimple.model.entity.Trade;
+import org.atonic.cryptexsimple.model.entity.jpa.Cryptocurrency;
+import org.atonic.cryptexsimple.model.entity.jpa.Trade;
 import org.atonic.cryptexsimple.model.enums.CryptoSymbol;
-import org.atonic.cryptexsimple.model.repository.CryptocurrencyRepository;
-import org.atonic.cryptexsimple.model.repository.TradeRepository;
+import org.atonic.cryptexsimple.model.repository.jpa.CryptocurrencyRepository;
+import org.atonic.cryptexsimple.model.repository.jpa.TradeRepository;
 import org.atonic.cryptexsimple.service.TradeService;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +17,6 @@ import java.util.Optional;
 @AllArgsConstructor
 public class TradeServiceImpl implements TradeService {
     private final CryptocurrencyRepository cryptocurrencyRepository;
-
     private final TradeRepository tradeRepository;
 
     @Override

@@ -5,8 +5,8 @@ import org.atonic.cryptexsimple.controller.payload.request.FIATWalletDepositRequ
 import org.atonic.cryptexsimple.controller.payload.response.MessageResponse;
 import org.atonic.cryptexsimple.controller.payload.response.fiat.wallet.UserFIATWalletBalanceResponse;
 import org.atonic.cryptexsimple.model.dto.FIATWalletDTO;
-import org.atonic.cryptexsimple.model.entity.FIATWallet;
-import org.atonic.cryptexsimple.model.entity.User;
+import org.atonic.cryptexsimple.model.entity.jpa.FIATWallet;
+import org.atonic.cryptexsimple.model.entity.jpa.User;
 import org.atonic.cryptexsimple.service.FIATWalletService;
 import org.atonic.cryptexsimple.service.UserService;
 import org.springframework.http.ResponseEntity;

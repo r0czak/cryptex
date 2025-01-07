@@ -1,27 +1,29 @@
 package org.atonic.cryptexsimple.service.impl;
 
-import org.atonic.cryptexsimple.model.entity.*;
+import org.atonic.cryptexsimple.model.entity.jpa.*;
 import org.atonic.cryptexsimple.model.enums.CryptoSymbol;
 import org.atonic.cryptexsimple.model.enums.OrderStatus;
 import org.atonic.cryptexsimple.model.enums.OrderType;
-import org.atonic.cryptexsimple.model.repository.CryptocurrencyRepository;
-import org.atonic.cryptexsimple.model.repository.TradeOrderRepository;
-import org.atonic.cryptexsimple.model.repository.TradeRepository;
+import org.atonic.cryptexsimple.model.repository.jpa.CryptocurrencyRepository;
+import org.atonic.cryptexsimple.model.repository.jpa.TradeOrderRepository;
+import org.atonic.cryptexsimple.model.repository.jpa.TradeRepository;
 import org.atonic.cryptexsimple.service.CryptoWalletService;
 import org.atonic.cryptexsimple.service.FIATWalletService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)

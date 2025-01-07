@@ -1,14 +1,14 @@
 package org.atonic.cryptexsimple.service.impl;
 
 import lombok.AllArgsConstructor;
-import org.atonic.cryptexsimple.model.entity.*;
+import org.atonic.cryptexsimple.model.entity.jpa.*;
 import org.atonic.cryptexsimple.model.enums.CryptoSymbol;
 import org.atonic.cryptexsimple.model.enums.FIATSymbol;
 import org.atonic.cryptexsimple.model.enums.OrderStatus;
 import org.atonic.cryptexsimple.model.enums.OrderType;
-import org.atonic.cryptexsimple.model.repository.CryptocurrencyRepository;
-import org.atonic.cryptexsimple.model.repository.TradeOrderRepository;
-import org.atonic.cryptexsimple.model.repository.TradeRepository;
+import org.atonic.cryptexsimple.model.repository.jpa.CryptocurrencyRepository;
+import org.atonic.cryptexsimple.model.repository.jpa.TradeOrderRepository;
+import org.atonic.cryptexsimple.model.repository.jpa.TradeRepository;
 import org.atonic.cryptexsimple.service.CryptoWalletService;
 import org.atonic.cryptexsimple.service.FIATWalletService;
 import org.atonic.cryptexsimple.service.TradeOrderService;
@@ -103,8 +103,6 @@ public class TradeOrderServiceImpl implements TradeOrderService {
         tradeOrderRepository.save(sellOrder);
 
         Trade trade = new Trade();
-        trade.setBuyTradeOrder(buyOrder);
-        trade.setSellTradeOrder(sellOrder);
         trade.setAmount(tradeAmount);
         trade.setPrice(sellOrder.getPrice());
         trade.setTimestamp(LocalDateTime.now());

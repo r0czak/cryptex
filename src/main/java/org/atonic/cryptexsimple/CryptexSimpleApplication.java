@@ -3,6 +3,7 @@ package org.atonic.cryptexsimple;
 import org.atonic.cryptexsimple.config.DatabaseConfigProperties;
 import org.atonic.cryptexsimple.config.DevConfigProperties;
 import org.atonic.cryptexsimple.config.OktaConfigurationProperties;
+import org.atonic.cryptexsimple.config.RedisConfigProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -10,6 +11,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 @SpringBootApplication
 @EnableConfigurationProperties({
     DatabaseConfigProperties.class,
+    RedisConfigProperties.class,
     OktaConfigurationProperties.class,
     DevConfigProperties.class
 })

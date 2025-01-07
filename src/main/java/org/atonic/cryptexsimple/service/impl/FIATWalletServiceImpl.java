@@ -6,11 +6,11 @@ import org.atonic.cryptexsimple.mapper.FIATWalletBalanceMapper;
 import org.atonic.cryptexsimple.mapper.FIATWalletMapper;
 import org.atonic.cryptexsimple.model.dto.FIATWalletBalanceDTO;
 import org.atonic.cryptexsimple.model.dto.FIATWalletDTO;
-import org.atonic.cryptexsimple.model.entity.*;
+import org.atonic.cryptexsimple.model.entity.jpa.*;
 import org.atonic.cryptexsimple.model.enums.FIATSymbol;
-import org.atonic.cryptexsimple.model.repository.FIATCurrencyRepository;
-import org.atonic.cryptexsimple.model.repository.FIATWalletBalanceRepository;
-import org.atonic.cryptexsimple.model.repository.FIATWalletRepository;
+import org.atonic.cryptexsimple.model.repository.jpa.FIATCurrencyRepository;
+import org.atonic.cryptexsimple.model.repository.jpa.FIATWalletBalanceRepository;
+import org.atonic.cryptexsimple.model.repository.jpa.FIATWalletRepository;
 import org.atonic.cryptexsimple.service.FIATWalletService;
 import org.springframework.stereotype.Service;
 

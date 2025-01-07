@@ -1,9 +1,9 @@
 package org.atonic.cryptexsimple.service;
 
 import org.atonic.cryptexsimple.model.dto.CryptoWalletDTO;
-import org.atonic.cryptexsimple.model.entity.CryptoWallet;
-import org.atonic.cryptexsimple.model.entity.CryptoWalletBalance;
-import org.atonic.cryptexsimple.model.entity.User;
+import org.atonic.cryptexsimple.model.entity.jpa.CryptoWallet;
+import org.atonic.cryptexsimple.model.entity.jpa.CryptoWalletBalance;
+import org.atonic.cryptexsimple.model.entity.jpa.User;
 import org.atonic.cryptexsimple.model.enums.CryptoSymbol;
 
 import java.math.BigDecimal;

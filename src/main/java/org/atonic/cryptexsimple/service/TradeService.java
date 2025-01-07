@@ -1,6 +1,6 @@
 package org.atonic.cryptexsimple.service;
 
-import org.atonic.cryptexsimple.model.entity.Trade;
+import org.atonic.cryptexsimple.model.entity.jpa.Trade;
 import org.atonic.cryptexsimple.model.enums.CryptoSymbol;
 
 import java.time.LocalDateTime;

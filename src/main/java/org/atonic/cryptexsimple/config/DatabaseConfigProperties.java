@@ -4,5 +4,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 
 @ConfigurationProperties("database")
-public record DatabaseConfigProperties(String mysql_username, String mysql_password) {
+public record DatabaseConfigProperties(String mysql_url, String mysql_username, String mysql_password) {
 }

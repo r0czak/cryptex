@@ -1,7 +1,7 @@
 package org.atonic.cryptexsimple.service;
 
 
-import org.atonic.cryptexsimple.model.entity.User;
+import org.atonic.cryptexsimple.model.entity.jpa.User;
 import org.springframework.security.oauth2.jwt.Jwt;
 
 import java.util.Optional;

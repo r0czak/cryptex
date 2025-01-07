@@ -1,8 +1,8 @@
 package org.atonic.cryptexsimple.mapper;
 
 import org.atonic.cryptexsimple.model.dto.FIATWalletBalanceDTO;
-import org.atonic.cryptexsimple.model.entity.FIATCurrency;
-import org.atonic.cryptexsimple.model.entity.FIATWalletBalance;
+import org.atonic.cryptexsimple.model.entity.jpa.FIATCurrency;
+import org.atonic.cryptexsimple.model.entity.jpa.FIATWalletBalance;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;

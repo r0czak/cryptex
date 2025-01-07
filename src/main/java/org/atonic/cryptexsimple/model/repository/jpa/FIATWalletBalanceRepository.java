@@ -1,8 +1,8 @@
-package org.atonic.cryptexsimple.model.repository;
+package org.atonic.cryptexsimple.model.repository.jpa;
 
-import org.atonic.cryptexsimple.model.entity.FIATWallet;
-import org.atonic.cryptexsimple.model.entity.FIATWalletBalance;
-import org.atonic.cryptexsimple.model.entity.FIATWalletBalanceId;
+import org.atonic.cryptexsimple.model.entity.jpa.FIATWallet;
+import org.atonic.cryptexsimple.model.entity.jpa.FIATWalletBalance;
+import org.atonic.cryptexsimple.model.entity.jpa.FIATWalletBalanceId;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

@@ -1,6 +1,6 @@
-package org.atonic.cryptexsimple.model.repository;
+package org.atonic.cryptexsimple.model.repository.jpa;
 
-import org.atonic.cryptexsimple.model.entity.FIATCurrency;
+import org.atonic.cryptexsimple.model.entity.jpa.FIATCurrency;
 import org.atonic.cryptexsimple.model.enums.FIATSymbol;
 import org.springframework.data.jpa.repository.JpaRepository;
 

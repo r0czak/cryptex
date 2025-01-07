@@ -1,4 +1,4 @@
-package org.atonic.cryptexsimple.model.entity;
+package org.atonic.cryptexsimple.model.entity.jpa;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -11,7 +11,7 @@ import org.atonic.cryptexsimple.model.enums.CryptoSymbol;
 @Getter
 @Setter
 @ToString
-@Table(name="cryptocurrency")
+@Table(name = "cryptocurrency")
 public class Cryptocurrency {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
