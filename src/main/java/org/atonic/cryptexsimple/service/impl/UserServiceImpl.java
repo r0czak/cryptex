@@ -28,6 +28,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Optional<User> getUser(Long userId) {
+        return userRepository.findById(userId);
+    }
+
+    @Override
     public User registerUser(Jwt jwt) {
         String auth0UserId = jwt.getSubject();
         String email = jwt.getClaimAsString("email");

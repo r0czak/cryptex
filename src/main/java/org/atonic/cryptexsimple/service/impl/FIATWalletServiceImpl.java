@@ -29,7 +29,7 @@ public class FIATWalletServiceImpl implements FIATWalletService {
     private final FIATWalletBalanceMapper fiatWalletBalanceMapper;
 
     @Override
-    public Optional<FIATWalletDTO> getFIATWallet(Long fiatWalletId) {
+    public Optional<FIATWalletDTO> getFIATWalletDTO(Long fiatWalletId) {
         Optional<FIATWallet> fiatWallet = fiatWalletRepository.findById(fiatWalletId);
         if (fiatWallet.isEmpty()) {
             return Optional.empty();
@@ -39,6 +39,11 @@ public class FIATWalletServiceImpl implements FIATWalletService {
             .map(fiatWalletBalanceMapper::toFIATWalletBalanceDTO).toList();
 
         return Optional.of(fiatWalletMapper.toFIATWalletDTO(fiatWallet.get(), balances));
+    }
+
+    @Override
+    public Optional<FIATWallet> getFIATWallet(Long fiatWalletId) {
+        return fiatWalletRepository.findById(fiatWalletId);
     }
 
     @Override

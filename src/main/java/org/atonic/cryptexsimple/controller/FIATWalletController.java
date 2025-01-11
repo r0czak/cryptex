@@ -50,7 +50,7 @@ public class FIATWalletController {
             return ResponseEntity.notFound().build();
         }
 
-        Optional<FIATWalletDTO> fiatWallet = fiatWalletService.getFIATWallet(fiatWalletIds.getFirst());
+        Optional<FIATWalletDTO> fiatWallet = fiatWalletService.getFIATWalletDTO(fiatWalletIds.getFirst());
 
         return fiatWallet.map(fiatWalletDTO -> ResponseEntity.ok(UserFIATWalletBalanceResponse.builder()
             .auth0UserId(jwt.getSubject())

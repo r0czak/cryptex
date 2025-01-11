@@ -36,3 +36,6 @@ secret.properties
 
 ### Docker ###
 compose.yaml
+
+### Debug ###
+**/src/main/**/controller/dev/

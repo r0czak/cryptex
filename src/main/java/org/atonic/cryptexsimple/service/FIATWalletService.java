@@ -11,7 +11,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface FIATWalletService {
-    Optional<FIATWalletDTO> getFIATWallet(Long fiatWalletId);
+    Optional<FIATWalletDTO> getFIATWalletDTO(Long fiatWalletId);
+
+    Optional<FIATWallet> getFIATWallet(Long fiatWalletId);
 
     List<FIATWallet> getUserFIATWallets(User user);
 

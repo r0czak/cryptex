@@ -5,8 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.atonic.cryptexsimple.model.entity.redis.TradeOrderPOJO;
 import org.atonic.cryptexsimple.model.enums.CryptoSymbol;
 import org.atonic.cryptexsimple.model.enums.OrderType;
+import org.atonic.cryptexsimple.model.pojo.TradePOJO;
 import org.atonic.cryptexsimple.model.repository.redis.RedisTradeOrderRepository;
-import org.atonic.cryptexsimple.service.RedisTradeOrderService;
+import org.atonic.cryptexsimple.service.OrderbookService;
+import org.atonic.cryptexsimple.service.TradeService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -19,7 +21,9 @@ import java.util.Set;
 @Service
 @Slf4j
 @AllArgsConstructor
-public class RedisTradeOrderServiceImpl implements RedisTradeOrderService {
+public class OrderbookServiceImpl implements OrderbookService {
+    private final TradeService tradeService;
+
     private final StringRedisTemplate redisTemplate;
     private final RedisTradeOrderRepository tradeOrderRepository;
 
@@ -44,14 +48,14 @@ public class RedisTradeOrderServiceImpl implements RedisTradeOrderService {
     public void matchOrders(TradeOrderPOJO tradeOrder) {
         if (OrderType.SELL.equals(tradeOrder.getType())) {
             Set<String> topBuyIdsByPrice = getTopOrdersByPrice(tradeOrder.getCryptoSymbol(), tradeOrder.getPrice(), OrderType.BUY);
-            if (topBuyIdsByPrice != null && topBuyIdsByPrice.isEmpty()) {
+            if (topBuyIdsByPrice == null || topBuyIdsByPrice.isEmpty()) {
                 return;
             }
 
             matchSellOrder(tradeOrder, topBuyIdsByPrice);
         } else {
             Set<String> topSellIdsByPrice = getTopOrdersByPrice(tradeOrder.getCryptoSymbol(), tradeOrder.getPrice(), OrderType.SELL);
-            if (topSellIdsByPrice != null && topSellIdsByPrice.isEmpty()) {
+            if (topSellIdsByPrice == null || topSellIdsByPrice.isEmpty()) {
                 return;
             }
 
@@ -119,6 +123,8 @@ public class RedisTradeOrderServiceImpl implements RedisTradeOrderService {
         sellOrder.setAmount(sellAmount.subtract(tradeAmount).toString());
         buyOrder.setAmount(buyAmount.subtract(tradeAmount).toString());
 
+        TradePOJO tradePOJO = prepareTradePOJO(sellOrder, buyOrder);
+
         if (new BigDecimal(sellOrder.getAmount()).compareTo(BigDecimal.ZERO) == 0) {
             tradeOrderRepository.delete(sellOrder);
             redisTemplate.opsForZSet().remove(String.format(SELL_ORDERS_KEY, sellOrder.getCryptoSymbol()), sellOrder.getId());
@@ -133,7 +139,9 @@ public class RedisTradeOrderServiceImpl implements RedisTradeOrderService {
             tradeOrderRepository.save(buyOrder);
         }
 
-        log.info("Trade executed: {} {} for {} {}", tradeAmount, sellOrder.getCryptoSymbol(), tradeAmount.multiply(new BigDecimal(sellOrder.getPrice())), sellOrder.getFiatSymbol());
+        tradeService.executeTrade(tradePOJO);
+
+        log.info("Trade orders executed: {} {} for {} {}", tradeAmount, sellOrder.getCryptoSymbol(), tradeAmount.multiply(new BigDecimal(sellOrder.getPrice())), sellOrder.getFiatSymbol());
     }
 
     private Set<String> getTopOrdersByPrice(CryptoSymbol symbol, String price, OrderType type) {
@@ -144,5 +152,26 @@ public class RedisTradeOrderServiceImpl implements RedisTradeOrderService {
         return OrderType.BUY.equals(type) ?
             redisTemplate.opsForZSet().reverseRangeByScore(key, new BigDecimal(price).doubleValue(), Double.MAX_VALUE) :
             redisTemplate.opsForZSet().rangeByScore(key, 0.0, new BigDecimal(price).doubleValue());
+    }
+
+    private TradePOJO prepareTradePOJO(TradeOrderPOJO sellOrder, TradeOrderPOJO buyOrder) {
+        BigDecimal sellAmount = new BigDecimal(sellOrder.getAmount());
+        BigDecimal buyAmount = new BigDecimal(buyOrder.getAmount());
+        BigDecimal tradeAmount = sellAmount.min(buyAmount);
+
+        BigDecimal tradePrice = new BigDecimal(sellOrder.getPrice());
+
+        return TradePOJO.builder()
+            .amount(tradeAmount)
+            .price(tradePrice)
+            .sellerId(Long.valueOf(sellOrder.getUserId()))
+            .sellerFIATWalletId(Long.valueOf(sellOrder.getFiatWalletId()))
+            .sellerCryptoWalletId(Long.valueOf(sellOrder.getCryptoWalletId()))
+            .buyerId(Long.valueOf(buyOrder.getUserId()))
+            .buyerFIATWalletId(Long.valueOf(buyOrder.getFiatWalletId()))
+            .buyerCryptoWalletId(Long.valueOf(buyOrder.getCryptoWalletId()))
+            .fiatSymbol(sellOrder.getFiatSymbol())
+            .cryptoSymbol(sellOrder.getCryptoSymbol())
+            .build();
     }
 }

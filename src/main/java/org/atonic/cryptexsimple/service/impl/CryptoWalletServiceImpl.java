@@ -29,7 +29,7 @@ public class CryptoWalletServiceImpl implements CryptoWalletService {
     private final CryptoWalletBalanceMapper cryptoWalletBalanceMapper;
 
     @Override
-    public Optional<CryptoWalletDTO> getCryptoWallet(Long cryptoWalletId) {
+    public Optional<CryptoWalletDTO> getCryptoWalletDTO(Long cryptoWalletId) {
         Optional<CryptoWallet> cryptoWalletOptional = cryptoWalletRepository.findById(cryptoWalletId);
         if (cryptoWalletOptional.isEmpty()) {
             return Optional.empty();
@@ -42,6 +42,11 @@ public class CryptoWalletServiceImpl implements CryptoWalletService {
 
         return Optional.of(cryptoWalletMapper.toCryptoWalletDTO(cryptoWalletOptional.get(), balances));
 
+    }
+
+    @Override
+    public Optional<CryptoWallet> getCryptoWallet(Long cryptoWalletId) {
+        return cryptoWalletRepository.findById(cryptoWalletId);
     }
 
     @Override
@@ -113,6 +118,7 @@ public class CryptoWalletServiceImpl implements CryptoWalletService {
     }
 
     @Override
+    @Transactional
     public Optional<CryptoWallet> transferAllFunds(Long sourceWalletId, Long targetWalletId) {
         if (sourceWalletId.equals(targetWalletId)) {
             return Optional.empty();
@@ -143,6 +149,7 @@ public class CryptoWalletServiceImpl implements CryptoWalletService {
     }
 
     @Override
+    @Transactional
     public void deleteCryptoWallet(Long cryptoWalletId) {
         Optional<CryptoWallet> cryptoWallet = cryptoWalletRepository.findById(cryptoWalletId);
 

@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 
-public interface RedisTradeOrderService {
+public interface OrderbookService {
     Optional<TradeOrderPOJO> placeOrder(TradeOrderPOJO tradeOrder);
 
     void matchOrders(TradeOrderPOJO tradeOrder);

@@ -11,7 +11,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CryptoWalletService {
-    Optional<CryptoWalletDTO> getCryptoWallet(Long cryptoWalletId);
+    Optional<CryptoWalletDTO> getCryptoWalletDTO(Long cryptoWalletId);
+
+    Optional<CryptoWallet> getCryptoWallet(Long cryptoWalletId);
 
     List<CryptoWallet> getUserCryptoWallets(User user);
 

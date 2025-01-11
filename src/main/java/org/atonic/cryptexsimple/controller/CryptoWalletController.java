@@ -114,7 +114,7 @@ public class CryptoWalletController {
 
         List<CryptoWalletDTO> cryptoWallets = new ArrayList<>();
 
-        walletIds.forEach(id -> cryptoWalletService.getCryptoWallet(id).ifPresent(cryptoWallets::add));
+        walletIds.forEach(id -> cryptoWalletService.getCryptoWalletDTO(id).ifPresent(cryptoWallets::add));
 
         return ResponseEntity.ok(UserCryptoWalletsInfoResponse.builder()
             .auth0UserId(jwt.getSubject())
