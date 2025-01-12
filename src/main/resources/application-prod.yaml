@@ -19,7 +19,7 @@ spring:
     database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false
   sql:
     init:
       mode: always
@@ -29,6 +29,20 @@ spring:
       host: ${redis.host}
       port: ${redis.port}
       password: ${redis.password}
+
+  rabbitmq:
+    host: ${rabbitmq.host}
+    port: ${rabbitmq.amqp-port}
+    username: ${rabbitmq.username}
+    password: ${rabbitmq.password}
+    listener:
+      direct:
+        retry:
+          enabled: true
+          initial-interval: 2s
+          max-attempts: 3
+          max-interval: 10s
+          multiplier: 2
 
   security:
     oauth2:

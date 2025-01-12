@@ -39,3 +39,4 @@ compose.yaml
 
 ### Debug ###
 **/src/main/**/controller/dev/
+**/src/main/**/init/DevDataInitializer.java

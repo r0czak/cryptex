@@ -1,5 +1,6 @@
 package org.atonic.cryptexsimple.service.impl;
 
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.atonic.cryptexsimple.model.entity.jpa.*;
 import org.atonic.cryptexsimple.model.repository.jpa.*;
@@ -32,6 +33,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(userId);
     }
 
+    @Transactional
     @Override
     public User registerUser(Jwt jwt) {
         String auth0UserId = jwt.getSubject();

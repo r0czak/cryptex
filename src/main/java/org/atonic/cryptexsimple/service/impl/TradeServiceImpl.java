@@ -48,7 +48,7 @@ public class TradeServiceImpl implements TradeService {
         Trade trade = prepareTrade(tradeDetails);
 
         updateCryptoWalletsBalances(tradePOJO.getSellerCryptoWalletId(), tradePOJO.getBuyerCryptoWalletId(), tradePOJO.getCryptoSymbol(), tradePOJO.getAmount());
-        updateFIATWalletsBalances(tradePOJO.getSellerFIATWalletId(), tradePOJO.getBuyerFIATWalletId(), tradePOJO.getFiatSymbol(), tradePOJO.getAmount());
+        updateFIATWalletsBalances(tradePOJO.getSellerFIATWalletId(), tradePOJO.getBuyerFIATWalletId(), tradePOJO.getFiatSymbol(), tradePOJO.getAmount(), tradePOJO.getPrice());
         tradeRepository.save(trade);
         log.info("Trade executed between seller={} and buyer={}. Trade params={} {} for {} {}",
             tradePOJO.getSellerId(),
@@ -170,8 +170,8 @@ public class TradeServiceImpl implements TradeService {
         cryptoWalletService.updateBalance(buyerCryptoWalletId, symbol, amount);
     }
 
-    private void updateFIATWalletsBalances(Long sellerFIATWalletId, Long buyerFIATWalletId, FIATSymbol symbol, BigDecimal amount) {
-        fiatWalletService.updateBalance(sellerFIATWalletId, symbol, amount.negate());
-        fiatWalletService.updateBalance(buyerFIATWalletId, symbol, amount);
+    private void updateFIATWalletsBalances(Long sellerFIATWalletId, Long buyerFIATWalletId, FIATSymbol symbol, BigDecimal amount, BigDecimal price) {
+        fiatWalletService.updateBalance(sellerFIATWalletId, symbol, amount.multiply(price));
+        fiatWalletService.updateBalance(buyerFIATWalletId, symbol, amount.multiply(price).negate());
     }
 }
