@@ -7,9 +7,8 @@ import org.atonic.cryptexsimple.controller.payload.request.TransferFundsRequest;
 import org.atonic.cryptexsimple.controller.payload.response.MessageResponse;
 import org.atonic.cryptexsimple.controller.payload.response.crypto.wallet.UserCryptoWalletsInfoResponse;
 import org.atonic.cryptexsimple.model.dto.CryptoWalletDTO;
-import org.atonic.cryptexsimple.model.entity.CryptoWallet;
-import org.atonic.cryptexsimple.model.entity.User;
-import org.atonic.cryptexsimple.model.enums.CryptoSymbol;
+import org.atonic.cryptexsimple.model.entity.jpa.CryptoWallet;
+import org.atonic.cryptexsimple.model.entity.jpa.User;
 import org.atonic.cryptexsimple.service.CryptoWalletService;
 import org.atonic.cryptexsimple.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -92,7 +91,7 @@ public class CryptoWalletController {
         @AuthenticationPrincipal Jwt jwt,
         @RequestBody CryptoWalletDepositRequest request) {
         userService.findUserByAuth0UserId(jwt.getSubject())
-            .ifPresent(foundUser -> cryptoWalletService.updateBalance(request.getCryptoWalletId(), CryptoSymbol.valueOf(request.getSymbol()), request.getAmount()));
+            .ifPresent(foundUser -> cryptoWalletService.updateBalance(request.getCryptoWalletId(), request.getSymbol(), request.getAmount()));
 
         return ResponseEntity.ok(new MessageResponse(
                 MessageFormat.format("{0} crypto wallet balance updated for user: {1}",
@@ -114,7 +113,7 @@ public class CryptoWalletController {
 
         List<CryptoWalletDTO> cryptoWallets = new ArrayList<>();
 
-        walletIds.forEach(id -> cryptoWalletService.getCryptoWallet(id).ifPresent(cryptoWallets::add));
+        walletIds.forEach(id -> cryptoWalletService.getCryptoWalletDTO(id).ifPresent(cryptoWallets::add));
 
         return ResponseEntity.ok(UserCryptoWalletsInfoResponse.builder()
             .auth0UserId(jwt.getSubject())

@@ -1,8 +1,8 @@
 package org.atonic.cryptexsimple.mapper;
 
 import org.atonic.cryptexsimple.model.dto.CryptoWalletBalanceDTO;
-import org.atonic.cryptexsimple.model.entity.CryptoWalletBalance;
-import org.atonic.cryptexsimple.model.entity.Cryptocurrency;
+import org.atonic.cryptexsimple.model.entity.jpa.CryptoWalletBalance;
+import org.atonic.cryptexsimple.model.entity.jpa.Cryptocurrency;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;

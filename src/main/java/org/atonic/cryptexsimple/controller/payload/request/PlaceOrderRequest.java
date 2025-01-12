@@ -2,6 +2,7 @@ package org.atonic.cryptexsimple.controller.payload.request;
 
 import lombok.Data;
 import org.atonic.cryptexsimple.model.enums.CryptoSymbol;
+import org.atonic.cryptexsimple.model.enums.FIATSymbol;
 import org.atonic.cryptexsimple.model.enums.OrderType;
 
 import java.math.BigDecimal;
@@ -9,7 +10,8 @@ import java.math.BigDecimal;
 @Data
 public class PlaceOrderRequest {
     private OrderType type;
-    private CryptoSymbol symbol;
+    private CryptoSymbol cryptoSymbol;
+    private FIATSymbol fiatSymbol;
     private BigDecimal amount;
     private BigDecimal price;
     private Long cryptoWalletId;

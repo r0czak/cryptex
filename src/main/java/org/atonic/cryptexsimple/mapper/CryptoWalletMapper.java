@@ -3,7 +3,7 @@ package org.atonic.cryptexsimple.mapper;
 import lombok.Generated;
 import org.atonic.cryptexsimple.model.dto.CryptoWalletBalanceDTO;
 import org.atonic.cryptexsimple.model.dto.CryptoWalletDTO;
-import org.atonic.cryptexsimple.model.entity.CryptoWallet;
+import org.atonic.cryptexsimple.model.entity.jpa.CryptoWallet;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

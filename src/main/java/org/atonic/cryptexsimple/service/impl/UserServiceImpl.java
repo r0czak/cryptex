@@ -1,8 +1,9 @@
 package org.atonic.cryptexsimple.service.impl;
 
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
-import org.atonic.cryptexsimple.model.entity.*;
-import org.atonic.cryptexsimple.model.repository.*;
+import org.atonic.cryptexsimple.model.entity.jpa.*;
+import org.atonic.cryptexsimple.model.repository.jpa.*;
 import org.atonic.cryptexsimple.service.UserService;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,12 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByAuth0UserId(auth0UserId);
     }
 
+    @Override
+    public Optional<User> getUser(Long userId) {
+        return userRepository.findById(userId);
+    }
+
+    @Transactional
     @Override
     public User registerUser(Jwt jwt) {
         String auth0UserId = jwt.getSubject();

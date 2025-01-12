@@ -1,13 +1,15 @@
 package org.atonic.cryptexsimple.service;
 
 
-import org.atonic.cryptexsimple.model.entity.User;
+import org.atonic.cryptexsimple.model.entity.jpa.User;
 import org.springframework.security.oauth2.jwt.Jwt;
 
 import java.util.Optional;
 
 public interface UserService {
     Optional<User> getUser(Jwt jwt);
+
+    Optional<User> getUser(Long userId);
 
     User registerUser(Jwt jwt);
 

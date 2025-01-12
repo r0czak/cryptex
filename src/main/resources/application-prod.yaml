@@ -11,7 +11,7 @@ spring:
 
 
   datasource:
-    url: jdbc:mysql://localhost:3306/cryptex_simple
+    url: ${database.mysql-url}
     username: ${database.mysql_username}
     password: ${database.mysql_password}
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -19,10 +19,30 @@ spring:
     database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false
   sql:
     init:
       mode: always
+
+  data:
+    redis:
+      host: ${redis.host}
+      port: ${redis.port}
+      password: ${redis.password}
+
+  rabbitmq:
+    host: ${rabbitmq.host}
+    port: ${rabbitmq.amqp-port}
+    username: ${rabbitmq.username}
+    password: ${rabbitmq.password}
+    listener:
+      direct:
+        retry:
+          enabled: true
+          initial-interval: 2s
+          max-attempts: 3
+          max-interval: 10s
+          multiplier: 2
 
   security:
     oauth2:
@@ -55,3 +75,4 @@ spring:
 
   config:
     import: optional:classpath:secret.properties
+

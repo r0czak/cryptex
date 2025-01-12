@@ -2,7 +2,7 @@ package org.atonic.cryptexsimple.controller;
 
 import lombok.AllArgsConstructor;
 import org.atonic.cryptexsimple.controller.payload.response.AuthResponse;
-import org.atonic.cryptexsimple.model.entity.User;
+import org.atonic.cryptexsimple.model.entity.jpa.User;
 import org.atonic.cryptexsimple.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

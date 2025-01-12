@@ -1,9 +1,9 @@
 package org.atonic.cryptexsimple.service;
 
 import org.atonic.cryptexsimple.model.dto.CryptoWalletDTO;
-import org.atonic.cryptexsimple.model.entity.CryptoWallet;
-import org.atonic.cryptexsimple.model.entity.CryptoWalletBalance;
-import org.atonic.cryptexsimple.model.entity.User;
+import org.atonic.cryptexsimple.model.entity.jpa.CryptoWallet;
+import org.atonic.cryptexsimple.model.entity.jpa.CryptoWalletBalance;
+import org.atonic.cryptexsimple.model.entity.jpa.User;
 import org.atonic.cryptexsimple.model.enums.CryptoSymbol;
 
 import java.math.BigDecimal;
@@ -11,7 +11,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CryptoWalletService {
-    Optional<CryptoWalletDTO> getCryptoWallet(Long cryptoWalletId);
+    Optional<CryptoWalletDTO> getCryptoWalletDTO(Long cryptoWalletId);
+
+    Optional<CryptoWallet> getCryptoWallet(Long cryptoWalletId);
 
     List<CryptoWallet> getUserCryptoWallets(User user);
 
