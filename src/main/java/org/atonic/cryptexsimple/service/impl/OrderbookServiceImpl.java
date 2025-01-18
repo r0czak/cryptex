@@ -81,7 +81,7 @@ public class OrderbookServiceImpl implements OrderbookService {
 
     @Override
     public List<TradeOrderPOJO> getSellTradeOrders(CryptoSymbol symbol, Pageable pageable) {
-        return tradeOrderRepository.findByCryptoSymbolAndTypeOrderByPriceDesc(symbol, OrderType.SELL, pageable);
+        return tradeOrderRepository.findByCryptoSymbolAndTypeOrderByPriceAsc(symbol, OrderType.SELL, pageable);
     }
 
     @Override

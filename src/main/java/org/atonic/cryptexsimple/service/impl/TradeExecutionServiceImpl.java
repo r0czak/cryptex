@@ -9,6 +9,7 @@ import org.atonic.cryptexsimple.model.pojo.TradePOJO;
 import org.atonic.cryptexsimple.service.OrderbookService;
 import org.atonic.cryptexsimple.service.TradeExecutionService;
 import org.atonic.cryptexsimple.service.TradeService;
+import org.atonic.cryptexsimple.service.VWAPService;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -19,14 +20,17 @@ import java.math.BigDecimal;
 public class TradeExecutionServiceImpl implements TradeExecutionService {
     private final TradeService tradeService;
     private final OrderbookService orderbookService;
+    private final VWAPService vwapService;
 
     @Transactional
     @Override
     public void executeTradeWithDistributedTransaction(TradeOrderPOJO sellOrder, TradeOrderPOJO buyOrder) throws TradeExecutionException {
         log.info("Executing trade with distributed transaction");
         try {
-            executeTrade(sellOrder, buyOrder);
+            TradePOJO trade = prepareTradePOJO(sellOrder, buyOrder);
+            tradeService.executeTrade(trade);
             updateOrderbookTradeOrders(sellOrder, buyOrder);
+            vwapService.handleNewTrade(trade);
             log.info("Trade executed successfully");
         } catch (Exception e) {
             log.error("Error executing trade: {}", e.getMessage());
@@ -53,11 +57,6 @@ public class TradeExecutionServiceImpl implements TradeExecutionService {
         } else {
             orderbookService.updateTradeOrder(buyOrder.getId(), buyOrder.getAmount(), buyOrder.getPrice());
         }
-    }
-
-    private void executeTrade(TradeOrderPOJO sellOrder, TradeOrderPOJO buyOrder) {
-        TradePOJO trade = prepareTradePOJO(sellOrder, buyOrder);
-        tradeService.executeTrade(trade);
     }
 
     private TradePOJO prepareTradePOJO(TradeOrderPOJO sellOrder, TradeOrderPOJO buyOrder) {

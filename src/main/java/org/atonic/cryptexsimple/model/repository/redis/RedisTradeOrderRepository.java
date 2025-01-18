@@ -17,6 +17,11 @@ public interface RedisTradeOrderRepository extends CrudRepository<TradeOrderPOJO
         OrderType type,
         Pageable pageable);
 
+    List<TradeOrderPOJO> findByCryptoSymbolAndTypeOrderByPriceAsc(
+        CryptoSymbol symbol,
+        OrderType type,
+        Pageable pageable);
+
     List<TradeOrderPOJO> findByCryptoSymbolAndTypeAndStatusOrderByTimestampAsc(
         CryptoSymbol symbol,
         OrderType type,

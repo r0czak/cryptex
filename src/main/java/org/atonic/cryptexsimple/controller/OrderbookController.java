@@ -1,7 +1,7 @@
 package org.atonic.cryptexsimple.controller;
 
 import lombok.AllArgsConstructor;
-import org.atonic.cryptexsimple.controller.payload.request.PlaceOrderRequest;
+import org.atonic.cryptexsimple.controller.payload.request.orderbook.PlaceOrderRequest;
 import org.atonic.cryptexsimple.controller.payload.response.MessageResponse;
 import org.atonic.cryptexsimple.model.entity.jpa.Cryptocurrency;
 import org.atonic.cryptexsimple.model.entity.jpa.User;

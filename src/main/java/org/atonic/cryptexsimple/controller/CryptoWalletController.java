@@ -1,9 +1,9 @@
 package org.atonic.cryptexsimple.controller;
 
 import lombok.AllArgsConstructor;
-import org.atonic.cryptexsimple.controller.payload.request.CryptoWalletDepositRequest;
-import org.atonic.cryptexsimple.controller.payload.request.RenameWalletRequest;
-import org.atonic.cryptexsimple.controller.payload.request.TransferFundsRequest;
+import org.atonic.cryptexsimple.controller.payload.request.crypto.wallet.CryptoWalletDepositRequest;
+import org.atonic.cryptexsimple.controller.payload.request.crypto.wallet.TransferFundsRequest;
+import org.atonic.cryptexsimple.controller.payload.request.fiat.wallet.RenameWalletRequest;
 import org.atonic.cryptexsimple.controller.payload.response.MessageResponse;
 import org.atonic.cryptexsimple.controller.payload.response.crypto.wallet.UserCryptoWalletsInfoResponse;
 import org.atonic.cryptexsimple.model.dto.CryptoWalletDTO;
