@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 public class VWAPHistoryDTO {
-    Long id;
+    String id;
     CryptoSymbol cryptoSymbol;
     FIATSymbol fiatSymbol;
 
