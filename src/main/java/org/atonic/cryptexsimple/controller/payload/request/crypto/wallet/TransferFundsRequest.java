@@ -1,4 +1,4 @@
-package org.atonic.cryptexsimple.controller.payload.request;
+package org.atonic.cryptexsimple.controller.payload.request.crypto.wallet;
 
 import lombok.Data;
 

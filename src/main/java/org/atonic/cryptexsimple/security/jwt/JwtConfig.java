@@ -45,8 +45,10 @@ public class JwtConfig {
                     .map(permission -> {
                         if (permission.equals("write:admin_role")) {
                             return new SimpleGrantedAuthority("ADMIN");
-                        } else if (permission.equals("write:user_role")){
+                        } else if (permission.equals("write:user_role")) {
                             return new SimpleGrantedAuthority("USER");
+                        } else if (permission.equals("write:api_access")) {
+                            return new SimpleGrantedAuthority("API_ACCESS");
                         }
                         return new SimpleGrantedAuthority(permission.toUpperCase());
                     })

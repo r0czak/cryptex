@@ -1,7 +1,7 @@
 package org.atonic.cryptexsimple.controller;
 
 import lombok.AllArgsConstructor;
-import org.atonic.cryptexsimple.controller.payload.request.FIATWalletDepositRequest;
+import org.atonic.cryptexsimple.controller.payload.request.fiat.wallet.FIATWalletDepositRequest;
 import org.atonic.cryptexsimple.controller.payload.response.MessageResponse;
 import org.atonic.cryptexsimple.controller.payload.response.fiat.wallet.UserFIATWalletBalanceResponse;
 import org.atonic.cryptexsimple.model.dto.FIATWalletDTO;

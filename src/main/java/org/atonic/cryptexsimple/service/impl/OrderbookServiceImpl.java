@@ -8,12 +8,12 @@ import org.atonic.cryptexsimple.model.enums.OrderType;
 import org.atonic.cryptexsimple.model.repository.redis.RedisTradeOrderRepository;
 import org.atonic.cryptexsimple.service.ExecuteTradeProducer;
 import org.atonic.cryptexsimple.service.OrderbookService;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -75,13 +75,13 @@ public class OrderbookServiceImpl implements OrderbookService {
     }
 
     @Override
-    public List<TradeOrderPOJO> getBuyTradeOrders(CryptoSymbol symbol, Pageable pageable) {
+    public Page<TradeOrderPOJO> getBuyTradeOrders(CryptoSymbol symbol, Pageable pageable) {
         return tradeOrderRepository.findByCryptoSymbolAndTypeOrderByPriceDesc(symbol, OrderType.BUY, pageable);
     }
 
     @Override
-    public List<TradeOrderPOJO> getSellTradeOrders(CryptoSymbol symbol, Pageable pageable) {
-        return tradeOrderRepository.findByCryptoSymbolAndTypeOrderByPriceDesc(symbol, OrderType.SELL, pageable);
+    public Page<TradeOrderPOJO> getSellTradeOrders(CryptoSymbol symbol, Pageable pageable) {
+        return tradeOrderRepository.findByCryptoSymbolAndTypeOrderByPriceAsc(symbol, OrderType.SELL, pageable);
     }
 
     @Override

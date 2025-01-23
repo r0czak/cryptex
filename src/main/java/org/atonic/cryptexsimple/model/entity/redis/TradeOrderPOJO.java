@@ -11,7 +11,7 @@ import org.springframework.data.redis.core.index.Indexed;
 
 @Data
 @Builder
-@RedisHash
+@RedisHash("trade_order")
 public class TradeOrderPOJO {
     @Id
     private String id;

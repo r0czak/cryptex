@@ -7,15 +7,20 @@ import org.atonic.cryptexsimple.model.dto.TradeDetails;
 import org.atonic.cryptexsimple.model.entity.jpa.*;
 import org.atonic.cryptexsimple.model.enums.CryptoSymbol;
 import org.atonic.cryptexsimple.model.enums.FIATSymbol;
+import org.atonic.cryptexsimple.model.enums.OrderType;
 import org.atonic.cryptexsimple.model.pojo.TradePOJO;
 import org.atonic.cryptexsimple.model.repository.jpa.CryptocurrencyRepository;
 import org.atonic.cryptexsimple.model.repository.jpa.FIATCurrencyRepository;
 import org.atonic.cryptexsimple.model.repository.jpa.TradeRepository;
+import org.atonic.cryptexsimple.model.repository.jpa.specification.TradeSpecification;
 import org.atonic.cryptexsimple.service.CryptoWalletService;
 import org.atonic.cryptexsimple.service.FIATWalletService;
 import org.atonic.cryptexsimple.service.TradeService;
 import org.atonic.cryptexsimple.service.UserService;
 import org.atonic.cryptexsimple.validators.TradePOJOValidator;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.ObjectError;
@@ -25,6 +30,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static org.atonic.cryptexsimple.model.repository.jpa.specification.TradeSpecification.defaultSpecification;
+import static org.atonic.cryptexsimple.model.repository.jpa.specification.TradeSpecification.whereOrderType;
 
 @Slf4j
 @Service
@@ -57,6 +65,23 @@ public class TradeServiceImpl implements TradeService {
             tradePOJO.getCryptoSymbol(),
             tradePOJO.getAmount().multiply(tradePOJO.getPrice()),
             tradePOJO.getFiatSymbol());
+    }
+
+    @Override
+    public Page<Trade> getUserTrades(User user,
+                                     CryptoSymbol cryptoSymbol, FIATSymbol fiatSymbol,
+                                     OrderType orderType,
+                                     LocalDateTime from, LocalDateTime to,
+                                     Pageable pageable) {
+        Optional<Cryptocurrency> crypto = cryptocurrencyRepository.findBySymbol(cryptoSymbol);
+        Optional<FIATCurrency> fiat = fiatCurrencyRepository.findBySymbol(fiatSymbol);
+
+        Specification<Trade> specification = Specification.where(defaultSpecification(user, from, to))
+            .and(crypto.map(TradeSpecification::whereCryptocurrency).orElse(null))
+            .and(fiat.map(TradeSpecification::whereFiatCurrency).orElse(null))
+            .and(orderType != null ? whereOrderType(user, orderType) : null);
+
+        return tradeRepository.findAll(specification, pageable);
     }
 
     @Override

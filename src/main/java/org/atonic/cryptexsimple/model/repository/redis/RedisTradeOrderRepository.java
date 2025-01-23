@@ -4,6 +4,7 @@ import org.atonic.cryptexsimple.model.entity.redis.TradeOrderPOJO;
 import org.atonic.cryptexsimple.model.enums.CryptoSymbol;
 import org.atonic.cryptexsimple.model.enums.OrderStatus;
 import org.atonic.cryptexsimple.model.enums.OrderType;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
@@ -12,7 +13,12 @@ import java.util.List;
 
 @Repository
 public interface RedisTradeOrderRepository extends CrudRepository<TradeOrderPOJO, String> {
-    List<TradeOrderPOJO> findByCryptoSymbolAndTypeOrderByPriceDesc(
+    Page<TradeOrderPOJO> findByCryptoSymbolAndTypeOrderByPriceDesc(
+        CryptoSymbol symbol,
+        OrderType type,
+        Pageable pageable);
+
+    Page<TradeOrderPOJO> findByCryptoSymbolAndTypeOrderByPriceAsc(
         CryptoSymbol symbol,
         OrderType type,
         Pageable pageable);

@@ -20,6 +20,7 @@ public class Trade {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(precision = 13, scale = 2)
     private BigDecimal amount;
     private BigDecimal price;
     private LocalDateTime timestamp;

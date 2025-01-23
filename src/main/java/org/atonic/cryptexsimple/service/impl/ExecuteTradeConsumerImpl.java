@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.atonic.cryptexsimple.config.RabbitMQConfig;
 import org.atonic.cryptexsimple.exception.trade.TradeExecutionException;
 import org.atonic.cryptexsimple.model.entity.redis.TradeOrderPOJO;
+import org.atonic.cryptexsimple.model.enums.OrderType;
 import org.atonic.cryptexsimple.service.ExecuteTradeConsumer;
 import org.atonic.cryptexsimple.service.OrderbookService;
 import org.atonic.cryptexsimple.service.TradeExecutionService;
@@ -32,7 +33,9 @@ public class ExecuteTradeConsumerImpl implements ExecuteTradeConsumer {
             if (matchedOrder.isPresent()) {
                 log.info("Matched trade order: {}", matchedOrder.get());
                 try {
-                    tradeExecutionService.executeTradeWithDistributedTransaction(tradeOrder, matchedOrder.get());
+                    TradeOrderPOJO sellOrder = tradeOrder.getType().equals(OrderType.SELL) ? tradeOrder : matchedOrder.get();
+                    TradeOrderPOJO buyOrder = tradeOrder.getType().equals(OrderType.BUY) ? tradeOrder : matchedOrder.get();
+                    tradeExecutionService.executeTradeWithDistributedTransaction(sellOrder, buyOrder);
                 } catch (TradeExecutionException e) {
                     isOrderOpen = false;
                     log.error("Error while consuming new trade task: {}", e.getMessage());

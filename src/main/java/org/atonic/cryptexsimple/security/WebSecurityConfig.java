@@ -1,5 +1,6 @@
 package org.atonic.cryptexsimple.security;
 
+import org.atonic.cryptexsimple.security.filter.ApiKeyAuthFilter;
 import org.atonic.cryptexsimple.security.jwt.JwtConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -41,13 +42,17 @@ public class WebSecurityConfig {
 
     @Bean
     @Profile("prod")
-    public SecurityFilterChain prodFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain prodFilterChain(HttpSecurity http,
+                                               ApiKeyAuthFilter apiKeyAuthFilter) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/api/v1/public").permitAll()
+                .requestMatchers("/api/v1/**").hasAnyAuthority("USER", "ADMIN")
+                .requestMatchers("/api/v2/**").hasAnyAuthority("API_ACCESS")
                 .anyRequest().authenticated()
             )
             .cors(Customizer.withDefaults())
+            .addFilterBefore(apiKeyAuthFilter, SecurityContextHolderFilter.class)
             .oauth2ResourceServer(oauth2 -> oauth2
                 .jwt(jwt -> jwt
                     .decoder(jwtConfig.jwtDecoder())
@@ -81,7 +86,8 @@ public class WebSecurityConfig {
 
                 List<SimpleGrantedAuthority> authorities = List.of(
                     new SimpleGrantedAuthority("USER"),
-                    new SimpleGrantedAuthority("ADMIN")
+                    new SimpleGrantedAuthority("ADMIN"),
+                    new SimpleGrantedAuthority("API_ACCESS")
                 );
 
                 JwtAuthenticationToken authentication = new JwtAuthenticationToken(jwt, authorities);

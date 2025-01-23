@@ -50,7 +50,7 @@ public class TradeOrderMatchingEngineImpl implements TradeOrderMatchingEngine {
         for (String sellOrderId : topSellIdsByPrice) {
             Optional<TradeOrderPOJO> sellOrder = orderbookService.getTradeOrder(sellOrderId);
             if (sellOrder.isPresent() &&
-                new BigDecimal(buyOrder.getPrice()).compareTo(new BigDecimal(sellOrder.get().getPrice())) <= 0 &&
+                new BigDecimal(buyOrder.getPrice()).compareTo(new BigDecimal(sellOrder.get().getPrice())) >= 0 &&
                 !buyOrder.getUserId().equals(sellOrder.get().getUserId())) {
                 return sellOrder;
             }
