@@ -11,7 +11,6 @@ import org.atonic.cryptexsimple.model.enums.CryptoSymbol;
 import org.atonic.cryptexsimple.model.repository.jpa.CryptocurrencyRepository;
 import org.atonic.cryptexsimple.service.ApiKeyService;
 import org.atonic.cryptexsimple.service.OrderbookService;
-import org.atonic.cryptexsimple.service.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -29,7 +28,6 @@ import static org.atonic.cryptexsimple.controller.api.utils.ApiControllerUtils.A
 @AllArgsConstructor
 public class ApiOrderbookController {
     private final OrderbookService orderbookService;
-    private final UserService userService;
     private final ApiKeyService apiKeyService;
 
     private final CryptocurrencyRepository cryptocurrencyRepository;

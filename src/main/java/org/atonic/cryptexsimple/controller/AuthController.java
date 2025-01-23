@@ -9,9 +9,12 @@ import org.atonic.cryptexsimple.model.entity.jpa.User;
 import org.atonic.cryptexsimple.service.ApiKeyService;
 import org.atonic.cryptexsimple.service.UserService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("api/v1/auth")
@@ -30,6 +33,7 @@ public class AuthController {
     }
 
     @PostMapping("/api-key/create")
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     public ResponseEntity<ApiKeyResponse> createApiKey(@RequestBody CreateApiKeyRequest request,
                                                        @AuthenticationPrincipal Jwt jwt) {
         User user = userService.getUser(jwt).orElseThrow();
@@ -43,8 +47,17 @@ public class AuthController {
     }
 
     @GetMapping("/api-key/key")
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     public ResponseEntity<ApiKeyResponse> getApiKey(@AuthenticationPrincipal Jwt jwt) {
         User user = userService.getUser(jwt).orElseThrow();
-        return ResponseEntity.ok(apiKeyService.getApiKeyValue(user));
+        Optional<ApiKey> apiKey = apiKeyService.getApiKey(user);
+
+        return apiKey.map(key -> ResponseEntity.ok(ApiKeyResponse.builder()
+            .apiKey(key.getKeyValue())
+            .description(key.getDescription())
+            .expiresAt(key.getExpiresAt())
+            .active(key.isActive())
+            .build())).orElseGet(() -> ResponseEntity.notFound().build());
+
     }
 }
