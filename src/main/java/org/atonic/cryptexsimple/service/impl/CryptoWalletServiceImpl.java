@@ -72,9 +72,10 @@ public class CryptoWalletServiceImpl implements CryptoWalletService {
 
     @Override
     @Transactional
-    public void updateBalance(Long cryptoWalletId, CryptoSymbol symbol, BigDecimal amount) {
+    public void updateBalance(Long cryptoWalletId, CryptoSymbol symbol, BigDecimal amount, BigDecimal price) {
         CryptoWalletBalance balance = getBalance(cryptoWalletId, symbol);
         balance.setBalance(balance.getBalance().add(amount));
+        balance.setPaidAmount(balance.getPaidAmount().add(price.multiply(amount)));
         cryptoWalletBalanceRepository.save(balance);
     }
 
@@ -95,6 +96,7 @@ public class CryptoWalletServiceImpl implements CryptoWalletService {
             balance.setCryptoWallet(newWallet);
             balance.setCryptocurrency(crypto);
             balance.setBalance(BigDecimal.ZERO);
+            balance.setPaidAmount(BigDecimal.ZERO);
             newWallet.getBalances().add(balance);
         }
 

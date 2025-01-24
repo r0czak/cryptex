@@ -62,6 +62,7 @@ public class UserServiceImpl implements UserService {
             balance.setCryptoWallet(cryptoWallet);
             balance.setCryptocurrency(crypto);
             balance.setBalance(BigDecimal.ZERO);
+            balance.setPaidAmount(BigDecimal.ZERO);
             cryptoWallet.getBalances().add(balance);
         }
 

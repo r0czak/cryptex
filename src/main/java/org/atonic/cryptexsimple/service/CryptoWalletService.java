@@ -27,5 +27,5 @@ public interface CryptoWalletService {
 
     CryptoWalletBalance getBalance(Long cryptoWalletId, CryptoSymbol symbol);
 
-    void updateBalance(Long cryptoWalletId, CryptoSymbol symbol, BigDecimal amount);
+    void updateBalance(Long cryptoWalletId, CryptoSymbol symbol, BigDecimal amount, BigDecimal price);
 }
