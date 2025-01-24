@@ -7,16 +7,21 @@ import org.atonic.cryptexsimple.controller.payload.request.fiat.wallet.RenameWal
 import org.atonic.cryptexsimple.controller.payload.response.MessageResponse;
 import org.atonic.cryptexsimple.controller.payload.response.crypto.wallet.UserCryptoWalletsInfoResponse;
 import org.atonic.cryptexsimple.model.dto.CryptoWalletDTO;
+import org.atonic.cryptexsimple.model.dto.VWAPHistoryDTO;
 import org.atonic.cryptexsimple.model.entity.jpa.CryptoWallet;
 import org.atonic.cryptexsimple.model.entity.jpa.User;
+import org.atonic.cryptexsimple.model.enums.FIATSymbol;
+import org.atonic.cryptexsimple.model.enums.TimeInterval;
 import org.atonic.cryptexsimple.service.CryptoWalletService;
 import org.atonic.cryptexsimple.service.UserService;
+import org.atonic.cryptexsimple.service.VWAPService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +33,7 @@ import java.util.Optional;
 @AllArgsConstructor
 public class CryptoWalletController {
     private final CryptoWalletService cryptoWalletService;
+    private final VWAPService vwapService;
     private final UserService userService;
 
     @PostMapping("/create")
@@ -90,8 +96,12 @@ public class CryptoWalletController {
     public ResponseEntity<MessageResponse> depositCryptoToCryptoWallet(
         @AuthenticationPrincipal Jwt jwt,
         @RequestBody CryptoWalletDepositRequest request) {
+        Optional<VWAPHistoryDTO> vwap = vwapService.getIntervalVWAP(request.getSymbol(), FIATSymbol.USD, TimeInterval.ONE_DAY);
         userService.findUserByAuth0UserId(jwt.getSubject())
-            .ifPresent(foundUser -> cryptoWalletService.updateBalance(request.getCryptoWalletId(), request.getSymbol(), request.getAmount()));
+            .ifPresent(foundUser -> cryptoWalletService.updateBalance(request.getCryptoWalletId(),
+                request.getSymbol(),
+                request.getAmount(),
+                vwap.map(VWAPHistoryDTO::getVwap).orElse(BigDecimal.ZERO)));
 
         return ResponseEntity.ok(new MessageResponse(
                 MessageFormat.format("{0} crypto wallet balance updated for user: {1}",

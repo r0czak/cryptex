@@ -30,10 +30,10 @@ import java.util.List;
 public class WebSecurityConfig {
     private final JwtConfig jwtConfig;
 
-    @Value("${dev.auth0-id1}")
+    @Value("${dev.auth0-id2}")
     private String auth0Id;
 
-    @Value("${dev.email1}")
+    @Value("${dev.email2}")
     private String email;
 
     public WebSecurityConfig(JwtConfig jwtConfig) {

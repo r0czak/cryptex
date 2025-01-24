@@ -15,4 +15,6 @@ public class CryptoWalletBalanceDTO {
     String cryptocurrencySymbol;
     @NonNull
     BigDecimal balance;
+    @NonNull
+    BigDecimal paidAmount;
 }

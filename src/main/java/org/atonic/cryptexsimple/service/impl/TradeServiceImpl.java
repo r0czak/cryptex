@@ -55,8 +55,16 @@ public class TradeServiceImpl implements TradeService {
         TradeDetails tradeDetails = prepareTradeDetails(tradePOJO);
         Trade trade = prepareTrade(tradeDetails);
 
-        updateCryptoWalletsBalances(tradePOJO.getSellerCryptoWalletId(), tradePOJO.getBuyerCryptoWalletId(), tradePOJO.getCryptoSymbol(), tradePOJO.getAmount());
-        updateFIATWalletsBalances(tradePOJO.getSellerFIATWalletId(), tradePOJO.getBuyerFIATWalletId(), tradePOJO.getFiatSymbol(), tradePOJO.getAmount(), tradePOJO.getPrice());
+        updateCryptoWalletsBalances(tradePOJO.getSellerCryptoWalletId(),
+            tradePOJO.getBuyerCryptoWalletId(),
+            tradePOJO.getCryptoSymbol(),
+            tradePOJO.getAmount(),
+            tradePOJO.getPrice());
+        updateFIATWalletsBalances(tradePOJO.getSellerFIATWalletId(),
+            tradePOJO.getBuyerFIATWalletId(),
+            tradePOJO.getFiatSymbol(),
+            tradePOJO.getAmount(),
+            tradePOJO.getPrice());
         tradeRepository.save(trade);
         log.info("Trade executed between seller={} and buyer={}. Trade params={} {} for {} {}",
             tradePOJO.getSellerId(),
@@ -190,9 +198,9 @@ public class TradeServiceImpl implements TradeService {
         }
     }
 
-    private void updateCryptoWalletsBalances(Long sellerCryptoWalletId, Long buyerCryptoWalletId, CryptoSymbol symbol, BigDecimal amount) {
-        cryptoWalletService.updateBalance(sellerCryptoWalletId, symbol, amount.negate());
-        cryptoWalletService.updateBalance(buyerCryptoWalletId, symbol, amount);
+    private void updateCryptoWalletsBalances(Long sellerCryptoWalletId, Long buyerCryptoWalletId, CryptoSymbol symbol, BigDecimal amount, BigDecimal price) {
+        cryptoWalletService.updateBalance(sellerCryptoWalletId, symbol, amount.negate(), price);
+        cryptoWalletService.updateBalance(buyerCryptoWalletId, symbol, amount, price);
     }
 
     private void updateFIATWalletsBalances(Long sellerFIATWalletId, Long buyerFIATWalletId, FIATSymbol symbol, BigDecimal amount, BigDecimal price) {

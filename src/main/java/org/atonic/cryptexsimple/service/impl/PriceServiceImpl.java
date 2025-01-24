@@ -12,6 +12,7 @@ import org.atonic.cryptexsimple.service.TradeService;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +35,7 @@ public class PriceServiceImpl implements PriceService {
         BigDecimal calculatedPrice = tradesInGivenTimeframe.stream()
             .map(Trade::getPrice)
             .reduce(BigDecimal.ZERO, BigDecimal::add)
-            .divide(BigDecimal.valueOf(tradesInGivenTimeframe.size()));
+            .divide(BigDecimal.valueOf(tradesInGivenTimeframe.size()), 2, RoundingMode.DOWN);
 
         return CryptoCurrencyPriceDTO.builder()
             .cryptoId(tradesInGivenTimeframe.getFirst().getId())

@@ -30,4 +30,7 @@ public class CryptoWalletBalance {
 
     @Column(precision = 19, scale = 8)
     private BigDecimal balance = BigDecimal.ZERO;
+
+    @Column(precision = 19, scale = 2)
+    private BigDecimal paidAmount = BigDecimal.ZERO;
 }
