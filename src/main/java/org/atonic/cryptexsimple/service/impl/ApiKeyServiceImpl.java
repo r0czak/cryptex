@@ -1,5 +1,6 @@
 package org.atonic.cryptexsimple.service.impl;
 
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.atonic.cryptexsimple.model.entity.jpa.ApiKey;
@@ -48,10 +49,8 @@ public class ApiKeyServiceImpl implements ApiKeyService {
     }
 
     @Override
+    @Transactional
     public void deactivateApiKey(UUID keyValue) {
-        apiKeyRepository.findByKeyValue(keyValue).ifPresent(apiKey -> {
-            apiKey.setActive(false);
-            apiKeyRepository.save(apiKey);
-        });
+        apiKeyRepository.deleteByKeyValue(keyValue);
     }
 }

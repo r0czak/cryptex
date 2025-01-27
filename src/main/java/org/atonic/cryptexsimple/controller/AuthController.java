@@ -60,4 +60,17 @@ public class AuthController {
             .build())).orElseGet(() -> ResponseEntity.notFound().build());
 
     }
+
+    @DeleteMapping("/api-key/delete")
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
+    public ResponseEntity<Void> deleteApiKey(@AuthenticationPrincipal Jwt jwt) {
+        User user = userService.getUser(jwt).orElseThrow();
+        Optional<ApiKey> apiKey = apiKeyService.getApiKey(user);
+        if (apiKey.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        apiKeyService.deactivateApiKey(apiKey.get().getKeyValue());
+        return ResponseEntity.noContent().build();
+    }
 }
