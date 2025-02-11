@@ -15,4 +15,6 @@ public interface ApiKeyRepository extends JpaRepository<ApiKey, Long> {
     Optional<ApiKey> findByKeyValueAndActiveIsTrue(UUID keyValue);
 
     Optional<ApiKey> findByKeyValue(UUID keyValue);
+
+    void deleteByKeyValue(UUID keyValue);
 }

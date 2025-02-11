@@ -20,7 +20,11 @@ public interface OrderbookService {
 
     Page<TradeOrderPOJO> getBuyTradeOrders(CryptoSymbol symbol, Pageable pageable);
 
+    Page<TradeOrderPOJO> getBuyTradeOrdersForeign(CryptoSymbol symbol, Long userId, Pageable pageable);
+
     Page<TradeOrderPOJO> getSellTradeOrders(CryptoSymbol symbol, Pageable pageable);
+
+    Page<TradeOrderPOJO> getSellTradeOrdersForeign(CryptoSymbol symbol, Long userId, Pageable pageable);
 
     Set<String> getTopOrdersByPrice(CryptoSymbol symbol, String price, OrderType type);
 }

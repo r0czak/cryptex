@@ -9,13 +9,16 @@ import org.atonic.cryptexsimple.model.repository.redis.RedisTradeOrderRepository
 import org.atonic.cryptexsimple.service.ExecuteTradeProducer;
 import org.atonic.cryptexsimple.service.OrderbookService;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.StreamSupport;
 
 @Service
 @Slf4j
@@ -76,19 +79,81 @@ public class OrderbookServiceImpl implements OrderbookService {
 
     @Override
     public Page<TradeOrderPOJO> getBuyTradeOrders(CryptoSymbol symbol, Pageable pageable) {
-        return tradeOrderRepository.findByCryptoSymbolAndTypeOrderByPriceDesc(symbol, OrderType.BUY, pageable);
+        String key = getTradeOrdersRedisKey(OrderType.BUY, symbol);
+        Set<String> buyOrders = redisTemplate.opsForZSet().reverseRangeByScore(key, 0, Double.MAX_VALUE, pageable.getOffset(), pageable.getPageSize());
+        assert buyOrders != null;
+
+        List<TradeOrderPOJO> tradeOrders = StreamSupport
+            .stream(tradeOrderRepository.findAllById(buyOrders.stream().toList()).spliterator(), false)
+            .toList();
+
+        return new PageImpl<>(
+            tradeOrders,
+            pageable,
+            tradeOrders.size()
+        );
+    }
+
+    @Override
+    public Page<TradeOrderPOJO> getBuyTradeOrdersForeign(CryptoSymbol symbol, Long userId, Pageable pageable) {
+        String key = getTradeOrdersRedisKey(OrderType.BUY, symbol);
+        Set<String> buyOrders = redisTemplate.opsForZSet().reverseRangeByScore(key, 0, Double.MAX_VALUE, 0, 100);
+        assert buyOrders != null;
+
+        List<TradeOrderPOJO> tradeOrders = StreamSupport
+            .stream(tradeOrderRepository.findAllById(buyOrders.stream()
+                    .toList())
+                .spliterator(), false)
+            .filter(tradeOrder -> !tradeOrder.getUserId().equals(userId.toString()))
+            .toList();
+
+        return new PageImpl<>(
+            tradeOrders,
+            pageable,
+            tradeOrders.size()
+        );
     }
 
     @Override
     public Page<TradeOrderPOJO> getSellTradeOrders(CryptoSymbol symbol, Pageable pageable) {
-        return tradeOrderRepository.findByCryptoSymbolAndTypeOrderByPriceAsc(symbol, OrderType.SELL, pageable);
+        String key = getTradeOrdersRedisKey(OrderType.SELL, symbol);
+        Set<String> sellOrders = redisTemplate.opsForZSet().rangeByScore(key, 0, Double.MAX_VALUE, pageable.getOffset(), pageable.getPageSize());
+        assert sellOrders != null;
+
+        List<TradeOrderPOJO> tradeOrders = StreamSupport
+            .stream(tradeOrderRepository.findAllById(sellOrders.stream().toList()).spliterator(), false)
+            .toList();
+
+        return new PageImpl<>(
+            tradeOrders,
+            pageable,
+            tradeOrders.size()
+        );
+    }
+
+    @Override
+    public Page<TradeOrderPOJO> getSellTradeOrdersForeign(CryptoSymbol symbol, Long userId, Pageable pageable) {
+        String key = getTradeOrdersRedisKey(OrderType.SELL, symbol);
+        Set<String> sellOrders = redisTemplate.opsForZSet().rangeByScore(key, 0, Double.MAX_VALUE, 0, 100);
+        assert sellOrders != null;
+
+        List<TradeOrderPOJO> tradeOrders = StreamSupport
+            .stream(tradeOrderRepository.findAllById(sellOrders.stream()
+                    .toList())
+                .spliterator(), false)
+            .filter(tradeOrder -> !tradeOrder.getUserId().equals(userId.toString()))
+            .toList();
+
+        return new PageImpl<>(
+            tradeOrders,
+            pageable,
+            tradeOrders.size()
+        );
     }
 
     @Override
     public Set<String> getTopOrdersByPrice(CryptoSymbol symbol, String price, OrderType type) {
-        String key = type == OrderType.BUY
-            ? String.format(BUY_ORDERS_KEY, symbol)
-            : String.format(SELL_ORDERS_KEY, symbol);
+        String key = getTradeOrdersRedisKey(type, symbol);
 
         return OrderType.BUY.equals(type) ?
             redisTemplate.opsForZSet().reverseRangeByScore(key, new BigDecimal(price).doubleValue(), Double.MAX_VALUE) :

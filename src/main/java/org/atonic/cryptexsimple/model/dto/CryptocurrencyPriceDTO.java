@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
-public class CryptoCurrencyPriceDTO {
+public class CryptocurrencyPriceDTO {
     Long cryptoId;
     CryptoSymbol symbol;
     BigDecimal calculatedPrice;

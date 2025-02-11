@@ -12,7 +12,6 @@ import org.atonic.cryptexsimple.service.VWAPService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -28,7 +27,6 @@ public class ApiVWAPHistoryController {
     private final VWAPService vwapService;
     private final ApiKeyService apiKeyService;
 
-    @PreAuthorize("hasAuthority('API_ACCESS')")
     @GetMapping("/current")
     public ResponseEntity<VWAPHistoryDTO> getCurrentVWAP(
         @RequestHeader(API_KEY_HEADER) String apiKey,
@@ -45,7 +43,6 @@ public class ApiVWAPHistoryController {
         return vwap.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PreAuthorize("hasAuthority('API_ACCESS')")
     @GetMapping("/history")
     public ResponseEntity<VWAPHistoryResponse> getVWAPHistory(
         @RequestHeader(API_KEY_HEADER) String apiKey,

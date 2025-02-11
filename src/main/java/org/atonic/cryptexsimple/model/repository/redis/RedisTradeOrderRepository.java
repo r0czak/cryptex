@@ -13,6 +13,7 @@ import java.util.List;
 
 @Repository
 public interface RedisTradeOrderRepository extends CrudRepository<TradeOrderPOJO, String> {
+
     Page<TradeOrderPOJO> findByCryptoSymbolAndTypeOrderByPriceDesc(
         CryptoSymbol symbol,
         OrderType type,

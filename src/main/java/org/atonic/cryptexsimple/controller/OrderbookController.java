@@ -46,15 +46,15 @@ public class OrderbookController {
 
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     @GetMapping("/buys")
-    public ResponseEntity<Page<TradeOrderPOJO>> getBuyOrderBook(CryptoSymbol symbol, int page, int size) {
+    public ResponseEntity<Page<TradeOrderPOJO>> getBuyOrderBook(CryptoSymbol cryptoSymbol, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return ResponseEntity.ok(orderbookService.getBuyTradeOrders(symbol, pageable));
+        return ResponseEntity.ok(orderbookService.getBuyTradeOrders(cryptoSymbol, pageable));
     }
 
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     @GetMapping("/sells")
-    public ResponseEntity<Page<TradeOrderPOJO>> getSellOrderBook(CryptoSymbol symbol, int page, int size) {
+    public ResponseEntity<Page<TradeOrderPOJO>> getSellOrderBook(CryptoSymbol cryptoSymbol, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return ResponseEntity.ok(orderbookService.getSellTradeOrders(symbol, pageable));
+        return ResponseEntity.ok(orderbookService.getSellTradeOrders(cryptoSymbol, pageable));
     }
 }
