@@ -15,7 +15,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -34,13 +33,15 @@ public class ApiOrderbookController {
 
 
     @PostMapping("/place")
-    @PreAuthorize("hasAuthority('API_ACCESS')")
     public ResponseEntity<?> placeTradeOrder(@RequestHeader(API_KEY_HEADER) String apiKey,
                                              @RequestBody PlaceOrderRequest request) {
         Optional<User> user = apiKeyService.getUserFromApiKey(UUID.fromString(apiKey));
         Optional<Cryptocurrency> crypto = cryptocurrencyRepository.findBySymbol(request.getCryptoSymbol());
 
         if (crypto.isPresent() && user.isPresent()) {
+            if (!OrderbookControllerUtils.isOrderValid(request)) {
+                return ResponseEntity.badRequest().body(new MessageResponse("Bad request"));
+            }
             TradeOrderPOJO order = OrderbookControllerUtils.prepareTradeOrderPOJO(request, user.get().getId());
 
             return ResponseEntity.ok(orderbookService.placeOrder(order));
@@ -50,7 +51,6 @@ public class ApiOrderbookController {
     }
 
     @GetMapping("/buys")
-    @PreAuthorize("hasAuthority('API_ACCESS')")
     public ResponseEntity<Page<TradeOrderPOJO>> getBuyOrderBook(@RequestHeader(API_KEY_HEADER) String apiKey,
                                                                 CryptoSymbol symbol, int page, int size) {
         Optional<User> user = apiKeyService.getUserFromApiKey(UUID.fromString(apiKey));
@@ -61,8 +61,19 @@ public class ApiOrderbookController {
         return ResponseEntity.ok(orderbookService.getBuyTradeOrders(symbol, pageable));
     }
 
+    @GetMapping("/buys/foreign")
+    public ResponseEntity<Page<TradeOrderPOJO>> getBuyOrderBookForeign(@RequestHeader(API_KEY_HEADER) String apiKey,
+                                                                       CryptoSymbol symbol, int page, int size) {
+        Optional<User> user = apiKeyService.getUserFromApiKey(UUID.fromString(apiKey));
+        if (user.isEmpty()) {
+            return ResponseEntity.badRequest().body(Page.empty());
+        }
+
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(orderbookService.getBuyTradeOrdersForeign(symbol, user.get().getId(), pageable));
+    }
+
     @GetMapping("/sells")
-    @PreAuthorize("hasAuthority('API_ACCESS')")
     public ResponseEntity<Page<TradeOrderPOJO>> getSellOrderBook(@RequestHeader(API_KEY_HEADER) String apiKey,
                                                                  CryptoSymbol symbol, int page, int size) {
         Optional<User> user = apiKeyService.getUserFromApiKey(UUID.fromString(apiKey));
@@ -72,6 +83,18 @@ public class ApiOrderbookController {
 
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(orderbookService.getSellTradeOrders(symbol, pageable));
+    }
+
+    @GetMapping("/sells/foreign")
+    public ResponseEntity<Page<TradeOrderPOJO>> getSellOrderBookForeign(@RequestHeader(API_KEY_HEADER) String apiKey,
+                                                                        CryptoSymbol symbol, int page, int size) {
+        Optional<User> user = apiKeyService.getUserFromApiKey(UUID.fromString(apiKey));
+        if (user.isEmpty()) {
+            return ResponseEntity.badRequest().body(Page.empty());
+        }
+
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(orderbookService.getSellTradeOrdersForeign(symbol, user.get().getId(), pageable));
     }
 
 }

@@ -1,4 +1,4 @@
-package org.atonic.cryptexsimple.controller;
+package org.atonic.cryptexsimple.controller.api;
 
 import lombok.AllArgsConstructor;
 import org.atonic.cryptexsimple.mapper.TradeMapper;
@@ -14,7 +14,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -33,7 +32,6 @@ public class ApiTradeController {
     private final TradeMapper tradeMapper;
 
     @GetMapping("/all")
-    @PreAuthorize("hasAuthority('API_ACCESS')")
     public ResponseEntity<Page<TradeDTO>> getAllTrades(@RequestHeader(API_KEY_HEADER) String apiKey,
                                                        @RequestParam(required = false) CryptoSymbol symbol,
                                                        @RequestParam(required = false) FIATSymbol fiatSymbol,
@@ -44,7 +42,7 @@ public class ApiTradeController {
                                                        @RequestParam int size) {
         Optional<User> user = apiKeyService.getUserFromApiKey(UUID.fromString(apiKey));
         Pageable pageable = PageRequest.of(page, size, Sort.by("timestamp").descending());
-        
+
         return user.map(value -> ResponseEntity.ok(tradeService.getUserTrades(value, symbol, fiatSymbol, orderType, from, to, pageable)
             .map(tradeMapper::toTradeDTO))).orElseGet(() -> ResponseEntity.badRequest().build());
 

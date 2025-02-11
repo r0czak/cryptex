@@ -2,7 +2,7 @@ package org.atonic.cryptexsimple.controller;
 
 
 import lombok.AllArgsConstructor;
-import org.atonic.cryptexsimple.model.dto.CryptoCurrencyPriceDTO;
+import org.atonic.cryptexsimple.model.dto.CryptocurrencyPriceDTO;
 import org.atonic.cryptexsimple.model.enums.CryptoSymbol;
 import org.atonic.cryptexsimple.service.PriceService;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +20,7 @@ public class CryptoCurrencyMarketController {
     private final PriceService priceService;
 
     @GetMapping("/price")
-    public ResponseEntity<CryptoCurrencyPriceDTO> getPrice(@RequestParam String symbol) {
+    public ResponseEntity<CryptocurrencyPriceDTO> getPrice(@RequestParam String symbol) {
         return ResponseEntity.ok(priceService.getCurrentPrices(CryptoSymbol.valueOf(symbol), LocalDateTime.now().minusMinutes(1), LocalDateTime.now()));
     }
 }

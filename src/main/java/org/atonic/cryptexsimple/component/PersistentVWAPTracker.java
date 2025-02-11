@@ -67,10 +67,10 @@ public class PersistentVWAPTracker {
             VWAPPOJO vwap = redisVWAPRepository.findById(key)
                 .orElse(createVWAP(trade.getCryptoSymbol(), trade.getFiatSymbol(), timestamp, timeInterval));
 
-            if (shouldResetAccumulator(vwap, timestamp, timeInterval)) {
-                saveToHistory(vwap);
-                vwap = createVWAP(trade.getCryptoSymbol(), trade.getFiatSymbol(), timestamp, timeInterval);
-            }
+//            if (shouldResetAccumulator(vwap, timestamp, timeInterval)) {
+//                saveToHistory(vwap);
+//                vwap = createVWAP(trade.getCryptoSymbol(), trade.getFiatSymbol(), timestamp, timeInterval);
+//            }
 
             vwap.setSumPriceVolume(vwap.getSumPriceVolume().add(trade.getPrice().multiply(trade.getAmount())));
             vwap.setTotalVolume(vwap.getTotalVolume().add(trade.getAmount()));

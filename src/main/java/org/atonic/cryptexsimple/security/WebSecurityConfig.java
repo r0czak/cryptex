@@ -17,6 +17,8 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.context.SecurityContextHolderFilter;
+import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestHeaderRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -40,19 +42,37 @@ public class WebSecurityConfig {
         this.jwtConfig = jwtConfig;
     }
 
+    // Production configuration for API v2 (requests with the X-API-Key header)
     @Bean
     @Profile("prod")
-    public SecurityFilterChain prodFilterChain(HttpSecurity http,
-                                               ApiKeyAuthFilter apiKeyAuthFilter) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable)
+    public SecurityFilterChain prodApiV2FilterChain(HttpSecurity http, ApiKeyAuthFilter apiKeyAuthFilter) throws Exception {
+        http
+            .securityMatcher(new RequestHeaderRequestMatcher("X-API-Key"))
+            .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/api/v1/public").permitAll()
                 .requestMatchers("/api/v1/**").hasAnyAuthority("USER", "ADMIN")
-                .requestMatchers("/api/v2/**").hasAnyAuthority("API_ACCESS")
                 .anyRequest().authenticated()
             )
             .cors(Customizer.withDefaults())
-            .addFilterBefore(apiKeyAuthFilter, SecurityContextHolderFilter.class)
+            .addFilterAfter(apiKeyAuthFilter, SecurityContextHolderFilter.class);
+
+        return http.build();
+    }
+
+    // Production configuration for API v1 (requests without the X-API-Key header)
+    @Bean
+    @Profile("prod")
+    public SecurityFilterChain prodApiV1FilterChain(HttpSecurity http) throws Exception {
+        http
+            .securityMatcher(new NegatedRequestMatcher(new RequestHeaderRequestMatcher("X-API-Key")))
+            .csrf(AbstractHttpConfigurer::disable)
+            .authorizeHttpRequests(authorize -> authorize
+                .requestMatchers("/api/v1/public").permitAll()
+                .requestMatchers("/api/v1/**").hasAnyAuthority("USER", "ADMIN")
+                .anyRequest().authenticated()
+            )
+            .cors(Customizer.withDefaults())
             .oauth2ResourceServer(oauth2 -> oauth2
                 .jwt(jwt -> jwt
                     .decoder(jwtConfig.jwtDecoder())
@@ -61,6 +81,27 @@ public class WebSecurityConfig {
 
         return http.build();
     }
+
+//    @Bean
+//    @Profile("prod")
+//    public SecurityFilterChain prodFilterChain(HttpSecurity http,
+//                                               ApiKeyAuthFilter apiKeyAuthFilter) throws Exception {
+//        http.csrf(AbstractHttpConfigurer::disable)
+//            .authorizeHttpRequests(authorize -> authorize
+//                .requestMatchers("/api/v1/public").permitAll()
+//                .requestMatchers("/api/v1/**").hasAnyAuthority("USER", "ADMIN")
+//                .anyRequest().authenticated()
+//            )
+//            .cors(Customizer.withDefaults())
+//            .addFilterBefore(apiKeyAuthFilter, SecurityContextHolderFilter.class)
+//            .oauth2ResourceServer(oauth2 -> oauth2
+//                .jwt(jwt -> jwt
+//                    .decoder(jwtConfig.jwtDecoder())
+//                    .jwtAuthenticationConverter(jwtConfig.jwtAuthenticationConverter()))
+//            );
+//
+//        return http.build();
+//    }
 
 
     @Bean
@@ -100,7 +141,6 @@ public class WebSecurityConfig {
         return http.build();
     }
 
-
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
@@ -112,6 +152,4 @@ public class WebSecurityConfig {
         source.registerCorsConfiguration("/**", config);
         return source;
     }
-
-
 }

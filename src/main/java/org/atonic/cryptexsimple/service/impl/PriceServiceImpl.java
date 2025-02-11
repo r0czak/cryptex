@@ -1,7 +1,7 @@
 package org.atonic.cryptexsimple.service.impl;
 
 import lombok.AllArgsConstructor;
-import org.atonic.cryptexsimple.model.dto.CryptoCurrencyPriceDTO;
+import org.atonic.cryptexsimple.model.dto.CryptocurrencyPriceDTO;
 import org.atonic.cryptexsimple.model.entity.jpa.Cryptocurrency;
 import org.atonic.cryptexsimple.model.entity.jpa.FIATCurrency;
 import org.atonic.cryptexsimple.model.entity.jpa.Trade;
@@ -23,7 +23,7 @@ public class PriceServiceImpl implements PriceService {
     private final TradeService tradeService;
 
     @Override
-    public CryptoCurrencyPriceDTO getCurrentPrices(CryptoSymbol cryptoSymbol, LocalDateTime calculationStartTime, LocalDateTime calculationEndTime) {
+    public CryptocurrencyPriceDTO getCurrentPrices(CryptoSymbol cryptoSymbol, LocalDateTime calculationStartTime, LocalDateTime calculationEndTime) {
         List<Trade> tradesInGivenTimeframe = tradeService.getTradesInGivenTimeframe(cryptoSymbol, calculationStartTime, calculationEndTime);
         if (tradesInGivenTimeframe.isEmpty()) {
             tradesInGivenTimeframe = tradeService.getTop3Trades(cryptoSymbol);
@@ -37,7 +37,7 @@ public class PriceServiceImpl implements PriceService {
             .reduce(BigDecimal.ZERO, BigDecimal::add)
             .divide(BigDecimal.valueOf(tradesInGivenTimeframe.size()), 2, RoundingMode.DOWN);
 
-        return CryptoCurrencyPriceDTO.builder()
+        return CryptocurrencyPriceDTO.builder()
             .cryptoId(tradesInGivenTimeframe.getFirst().getId())
             .symbol(cryptoSymbol)
             .calculatedPrice(calculatedPrice)
